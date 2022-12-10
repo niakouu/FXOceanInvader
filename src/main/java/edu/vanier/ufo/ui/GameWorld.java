@@ -1,15 +1,14 @@
 package edu.vanier.ufo.ui;
 
-import edu.vanier.ufo.helpers.ResourcesManager;
 import edu.vanier.ufo.engine.*;
 import edu.vanier.ufo.game.*;
+import edu.vanier.ufo.helpers.ResourcesManager;
 import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,7 +16,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.util.Random;
 import javafx.animation.AnimationTimer;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.image.ImageView;
@@ -124,7 +122,7 @@ public class GameWorld extends GameEngine {
     }
 
     /**
-     * Sets up the mouse input.
+     * Sets up the inputs.
      *
      * @param primaryStage The primary stage (app window).
      */
@@ -133,8 +131,11 @@ public class GameWorld extends GameEngine {
         
         primaryStage.getScene().setOnKeyPressed((KeyEvent event) -> {
             checkKeyIfKeyPressed(event, true);
+            
+            // Shield
             if (event.getCode() == KeyCode.E) this.spaceShip.shieldToggle();
             
+            // Fire
             if (event.getCode() == KeyCode.SPACE) {
                 Missile missile = this.spaceShip.fire(this.mousePositionX, this.mousePositionY);
                 getSpriteManager().addSprites(missile);
@@ -143,6 +144,7 @@ public class GameWorld extends GameEngine {
                 getSceneNodes().getChildren().add(0, missile.getNode());
             }
             
+            // Change weapon
             if (event.getCode() == KeyCode.C) {
                 this.spaceShip.changeWeapon();
             }
@@ -230,11 +232,9 @@ public class GameWorld extends GameEngine {
         // bounce off the walls when outside of boundaries
 
         Node displayNode;
-        if (sprite instanceof Shipp) {
-            displayNode = sprite.getNode();
-        } else {
-            displayNode = sprite.getNode();
-        }
+        if (sprite instanceof Shipp) displayNode = sprite.getNode(); 
+        else displayNode = sprite.getNode();
+        
         // Get the group node's X and Y but use the ImageView to obtain the width.
         if (sprite.getNode().getTranslateX() > (getGameSurface().getWidth() - displayNode.getBoundsInParent().getWidth())
                 || displayNode.getTranslateX() < 0) {
@@ -286,10 +286,11 @@ public class GameWorld extends GameEngine {
      */
     @Override
     protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
-        //TODO: implement collision detection here.
+        if (spriteA instanceof Missile && spriteB instanceof Missile) {
+            return false;
+        }
         if (spriteA != spriteB && spriteA instanceof Missile) {
             if (spriteA.collide(spriteB) && spriteB instanceof Atom) {
-
                 if (spriteA != spaceShip) {
                     spriteA.handleDeath(this);
                 }

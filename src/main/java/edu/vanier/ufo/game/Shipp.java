@@ -24,20 +24,19 @@ public class Shipp extends Sprite {
     
     private final static double CONSTANT_VELOCITY = 3d;
 
-
-    private final Circle stopArea;
-
     private boolean shieldOn;
 
+    private final Circle stopArea;
+    
     private final Circle shield;
-
-    private final FadeTransition shieldFade;
 
     private final Circle hitBounds;
     
     private final Group flipBook;
     
     private String rocketName;
+    
+    private final FadeTransition shieldFade;
     
     private int rocketNameIterationCounter;
 
@@ -88,7 +87,6 @@ public class Shipp extends Sprite {
         if (!aPressed && !dPressed) this.vX = 0;
         if (this.vX == 0 && this.vY == 0) return;
         
-        
         double angle = Math.atan2(this.vY, this.vX);
         this.vX = Math.cos(angle) * CONSTANT_VELOCITY;
         this.vY = Math.sin(angle) * CONSTANT_VELOCITY;
@@ -108,9 +106,7 @@ public class Shipp extends Sprite {
         this.imageView.rotateProperty().setValue(Math.toDegrees(angleShip));
         
         fireMissile = getMissle(this.rocketName, angleShip);
-        
-        double rotationAngleFire = Math.atan2(centerScene.getY(), centerScene.getX());
-        fireMissile.getImageViewNode().rotateProperty().setValue(Math.toDegrees(angleShip));
+        fireMissile.getImageViewNode().rotateProperty().setValue(Math.toDegrees(angleShip) + 90);
         
         return fireMissile;
     }
