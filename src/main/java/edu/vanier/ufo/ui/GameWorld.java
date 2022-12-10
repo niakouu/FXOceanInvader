@@ -271,7 +271,22 @@ public class GameWorld extends GameEngine {
     }
     
     private void stopShip() {
-        
+        Node shipNode;
+        if ((shipNode = this.spaceShip.getNode()) != null) {
+            if (shipNode.getTranslateX() > (getGameSurface().getWidth()
+                    - shipNode.getBoundsInParent().getWidth())
+                    || shipNode.getTranslateX() < 0) {
+                
+                
+            }
+            
+            if (shipNode.getTranslateY() > getGameSurface().getHeight()
+                    - shipNode.getBoundsInParent().getHeight()
+                    || shipNode.getTranslateY() < 0) {
+
+                
+            }
+        }
     }
 
     /**
