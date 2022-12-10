@@ -37,7 +37,7 @@ public class GameWorld extends GameEngine {
     // mouse press pt label
     private final Label mousePressPtLabel;
     
-    private final Shipp spaceShip;
+    private final Ship spaceShip;
     
     private double mousePositionX;
     private double mousePositionY;
@@ -55,7 +55,7 @@ public class GameWorld extends GameEngine {
         super(fps, title);
         this.mousePtLabel = new Label();
         this.mousePressPtLabel = new Label();
-        this.spaceShip = new Shipp();
+        this.spaceShip = new Ship();
         this.wPressed = new SimpleBooleanProperty();
         this.aPressed = new SimpleBooleanProperty();
         this.sPressed = new SimpleBooleanProperty();
@@ -115,6 +115,7 @@ public class GameWorld extends GameEngine {
         
         //TODO: Add the HUD here.
         getSceneNodes().getChildren().add(0, stats);
+        
 
 
         // load sound files
@@ -215,37 +216,31 @@ public class GameWorld extends GameEngine {
     protected void handleUpdate(Sprite sprite) {
         // advance object
         sprite.update();
-        if (sprite instanceof Missile missile) {
-            removeMissiles(missile);
-        } else {
-            bounceOffWalls(sprite);
-        }
+        if (sprite instanceof Missile missile) removeMissiles(missile);
+        else if (sprite instanceof Ship) stopShip();
+        else bounceOffWalls(sprite);
     }
 
     /**
-     * Change the direction of the moving object when it encounters the walls.
+     * Change the direction of the moving object when it encounters the walls. 
      *
      * @param sprite The sprite to update based on the wall boundaries. TODO The
      * ship has got issues.
      */
     private void bounceOffWalls(Sprite sprite) {
-        // bounce off the walls when outside of boundaries
-
         Node displayNode;
-        if (sprite instanceof Shipp) displayNode = sprite.getNode(); 
-        else displayNode = sprite.getNode();
-        
-        // Get the group node's X and Y but use the ImageView to obtain the width.
-        if (sprite.getNode().getTranslateX() > (getGameSurface().getWidth() - displayNode.getBoundsInParent().getWidth())
-                || displayNode.getTranslateX() < 0) {
-
-            // bounce the opposite direction
-            sprite.setVelocityX(sprite.getVelocityX() * -1);
-        }
-        // Get the group node's X and Y but use the ImageView to obtain the height.
-        if (sprite.getNode().getTranslateY() > getGameSurface().getHeight() - displayNode.getBoundsInParent().getHeight()
-                || sprite.getNode().getTranslateY() < 0) {
-            sprite.setVelocityY(sprite.getVelocityY() * -1);
+        if ((displayNode = sprite.getNode()) != null) {
+            // Get the group node's X and Y but use the ImageView to obtain the width.
+            if (sprite.getNode().getTranslateX() > (getGameSurface().getWidth() - displayNode.getBoundsInParent().getWidth())
+                    || displayNode.getTranslateX() < 0) {
+                // bounce the opposite direction
+                sprite.setVelocityX(sprite.getVelocityX() * -1);
+            }
+            // Get the group node's X and Y but use the ImageView to obtain the height.
+            if (sprite.getNode().getTranslateY() > getGameSurface().getHeight() - displayNode.getBoundsInParent().getHeight()
+                    || sprite.getNode().getTranslateY() < 0) {
+                sprite.setVelocityY(sprite.getVelocityY() * -1);
+            }
         }
     }
 
@@ -255,22 +250,28 @@ public class GameWorld extends GameEngine {
      * @param missile The missile to remove based on the wall boundaries.
      */
     private void removeMissiles(Missile missile) {
-        // bounce off the walls when outside of boundaries
-        if (missile.getNode().getTranslateX() > (getGameSurface().getWidth()
-                - missile.getNode().getBoundsInParent().getWidth())
-                || missile.getNode().getTranslateX() < 0) {
+        Node missileNode;
+        if ((missileNode = missile.getNode()) != null) {
+            if (missileNode.getTranslateX() > (getGameSurface().getWidth()
+                    - missileNode.getBoundsInParent().getWidth())
+                    || missileNode.getTranslateX() < 0) {
 
-            getSpriteManager().addSpritesToBeRemoved(missile);
-            getSceneNodes().getChildren().remove(missile.getNode());
+                getSpriteManager().addSpritesToBeRemoved(missile);
+                getSceneNodes().getChildren().remove(missileNode);
+            }
+            
+            if (missileNode.getTranslateY() > getGameSurface().getHeight()
+                    - missileNode.getBoundsInParent().getHeight()
+                    || missileNode.getTranslateY() < 0) {
 
+                getSpriteManager().addSpritesToBeRemoved(missile);
+                getSceneNodes().getChildren().remove(missileNode);
+            }
         }
-        if (missile.getNode().getTranslateY() > getGameSurface().getHeight()
-                - missile.getNode().getBoundsInParent().getHeight()
-                || missile.getNode().getTranslateY() < 0) {
-
-            getSpriteManager().addSpritesToBeRemoved(missile);
-            getSceneNodes().getChildren().remove(missile.getNode());
-        }
+    }
+    
+    private void stopShip() {
+        
     }
 
     /**
@@ -286,10 +287,18 @@ public class GameWorld extends GameEngine {
      */
     @Override
     protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
-        if (spriteA instanceof Missile && spriteB instanceof Missile) {
+        
+        // Missile hits missile will do nothing
+        if (spriteA instanceof Missile && spriteB instanceof Missile)
             return false;
+        
+        // Atom hits Ship -> loss of hearts
+        if (spriteA instanceof Atom && spriteB instanceof Ship) {
+            
         }
-        if (spriteA != spriteB && spriteA instanceof Missile) {
+        
+        // Missile hitting sprite
+        if (spriteA instanceof Missile) {
             if (spriteA.collide(spriteB) && spriteB instanceof Atom) {
                 if (spriteA != spaceShip) {
                     spriteA.handleDeath(this);

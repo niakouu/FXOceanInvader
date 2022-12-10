@@ -25,34 +25,18 @@ import javafx.util.Duration;
  */
 public abstract class GameEngine {
 
-    /**
-     * The JavaFX Scene as the game surface
-     */
     private Scene gameSurface;
-    /**
-     * All nodes to be displayed in the game window.
-     */
+    
     private Group sceneNodes;
-    /**
-     * The game loop using JavaFX's <code>Timeline</code> API.
-     */
+    
     private static Timeline gameLoop;
-
-    /**
-     * Number of frames per second.
-     */
+    
     private final int framesPerSecond;
 
-    /**
-     * Title in the application window.
-     */
     private final String windowTitle;
 
-    /**
-     * The sprite manager.
-     */
     private final SpriteManager spriteManager;
-
+    
     private final SoundManager soundManager;
 
     /**
@@ -142,10 +126,8 @@ public abstract class GameEngine {
         for (Sprite spriteA : spriteManager.getCollisionsToCheck()) {
             for (Sprite spriteB : spriteManager.getAllSprites()) {
                 if (handleCollision(spriteA, spriteB)) {
-                    // The break helps optimize the collisions
                     // The break statement means one object only hits another
-                    // object as opposed to one hitting many objects.
-                    // To be more accurate comment out the break statement.
+                    // object as opposed to one hitting many objects
                     break;
                 }
             }
