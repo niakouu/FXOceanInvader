@@ -16,10 +16,13 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.util.Random;
 import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.util.Duration;
 
 /**
  * This is a simple game world simulating a bunch of spheres looking like atomic
@@ -274,18 +277,18 @@ public class GameWorld extends GameEngine {
         Node shipNode;
         if ((shipNode = this.spaceShip.getNode()) != null) {
             if (shipNode.getTranslateX() > (getGameSurface().getWidth()
-                    - shipNode.getBoundsInParent().getWidth())
-                    || shipNode.getTranslateX() < 0) {
-                
-                
-            }
+                    - shipNode.getBoundsInParent().getWidth()))
+                this.dPressed.setValue(false);
+            
+            if (shipNode.getTranslateX() < 0)
+                this.aPressed.setValue(false);
             
             if (shipNode.getTranslateY() > getGameSurface().getHeight()
-                    - shipNode.getBoundsInParent().getHeight()
-                    || shipNode.getTranslateY() < 0) {
-
-                
-            }
+                    - shipNode.getBoundsInParent().getHeight())
+                this.sPressed.setValue(false);
+            
+            if (shipNode.getTranslateY() < 0)
+                this.wPressed.setValue(false);
         }
     }
 
@@ -315,15 +318,48 @@ public class GameWorld extends GameEngine {
         // Missile hitting sprite
         if (spriteA instanceof Missile) {
             if (spriteA.collide(spriteB) && spriteB instanceof Atom) {
-                if (spriteA != spaceShip) {
-                    spriteA.handleDeath(this);
-                }
-                if (spriteB != spaceShip) {
-                    spriteB.handleDeath(this);
-                }
+                    handleDeath((Atom)spriteA);
+                    handleDeath((Atom)spriteB);
             }
         }
         return false;
+    }
+
+    public void handleDeath(Atom atom) {
+        implode(atom);
+        removeAtom(atom);
+    }
+    
+    /**
+     * Animate an implosion. Once done remove from the game world
+     *
+     * @param gameWorld - game world
+     */
+    private void implode(Atom atom) {
+        atom.setVelocityX(0);
+        atom.setVelocityY(0);
+        Node currentNode = atom.getNode();
+        
+        Sprite explosion = new Atom(ResourcesManager.EXPLOSION);
+        if (!(atom instanceof Missile)) {
+            explosion.getNode().setTranslateX(atom.getNode().getTranslateX());
+            explosion.getNode().setTranslateY(atom.getNode().getTranslateY());
+            getSceneNodes().getChildren().add(explosion.getNode());
+        }
+        
+        FadeTransition ft = new FadeTransition(Duration.millis(300), currentNode);
+        ft.setFromValue(35);
+        ft.setToValue(0);
+        ft.setOnFinished((ActionEvent event) -> {
+            atom.isDead = true;
+            getSceneNodes().getChildren().remove(currentNode);
+            getSceneNodes().getChildren().remove(explosion.getNode());
+        });
+        ft.play();
+    }
+    
+    private void removeAtom(Atom atom) {
+        getSpriteManager().addSpritesToBeRemoved(atom);
     }
     
     private void checkKeyIfKeyPressed (KeyEvent event, boolean keyPressed) {

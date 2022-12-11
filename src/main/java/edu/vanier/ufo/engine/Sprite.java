@@ -147,8 +147,4 @@ public abstract class Sprite {
     public void setCollisionBounds(Node collisionBounds) {
         this.collidingNode = collisionBounds;
     }
-
-    public void handleDeath(GameEngine gameWorld) {
-        gameWorld.getSpriteManager().addSpritesToBeRemoved(this);
-    }
 }

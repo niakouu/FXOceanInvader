@@ -71,9 +71,9 @@ public abstract class GameEngine {
         };
         final KeyFrame gameFrame = new KeyFrame(frameDuration, onFinished);
         // sets the game world's game loop (Timeline)
-        Timeline gameLoop = new Timeline(gameFrame);
-        gameLoop.setCycleCount(Animation.INDEFINITE);
-        setGameLoop(gameLoop);
+        Timeline gameEngineLoop = new Timeline(gameFrame);
+        gameEngineLoop.setCycleCount(Animation.INDEFINITE);
+        setGameLoop(gameEngineLoop);
     }
 
     /**
@@ -108,9 +108,17 @@ public abstract class GameEngine {
      *
      * @param sprite - The sprite to update.
      */
-    protected void handleUpdate(Sprite sprite) {
-        
-    }
+    protected abstract void handleUpdate(Sprite sprite);
+    
+    /**
+     * When two objects collide this method can handle the passed in sprite
+     * objects. By default it returns false, meaning the objects do not collide.
+     *
+     * @param spriteA - called from checkCollision() method to be compared.
+     * @param spriteB - called from checkCollision() method to be compared.
+     * @return boolean True if the objects collided, otherwise false.
+     */
+    protected abstract boolean handleCollision(Sprite spriteA, Sprite spriteB);
 
     /**
      * Checks each game sprite in the game world to determine a collision
@@ -133,19 +141,7 @@ public abstract class GameEngine {
             }
         }
     }
-
-    /**
-     * When two objects collide this method can handle the passed in sprite
-     * objects. By default it returns false, meaning the objects do not collide.
-     *
-     * @param spriteA - called from checkCollision() method to be compared.
-     * @param spriteB - called from checkCollision() method to be compared.
-     * @return boolean True if the objects collided, otherwise false.
-     */
-    protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
-        return false;
-    }
-
+    
     /**
      * Sprites to be cleaned up.
      */

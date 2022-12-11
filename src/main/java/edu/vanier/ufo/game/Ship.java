@@ -25,8 +25,10 @@ public class Ship extends Sprite {
     private final static double CONSTANT_VELOCITY = 3d;
 
     private boolean shieldOn;
-
-    private final Circle stopArea;
+    
+    private boolean outOfBoundWidth;
+    
+    private boolean outOfBoundHeight;
     
     private final Circle shield;
 
@@ -44,12 +46,14 @@ public class Ship extends Sprite {
         loadImage();
         
         this.rocketNameIterationCounter = 0;
+        this.outOfBoundWidth = false;
+        this.outOfBoundHeight = false;
         this.rocketName = ResourcesManager.ROCKET_FIRE;
         
         this.flipBook = getFlipBook();
         setNode(this.flipBook);
         
-        this.stopArea = getStopArea();
+        //this.stopArea = getStopArea();
         this.hitBounds = getHitBounds();
         this.shield = getShield();
         this.shieldFade = getShieldFadeTransition();
@@ -63,11 +67,6 @@ public class Ship extends Sprite {
     public void update() {
         this.flipBook.setTranslateX(this.flipBook.getTranslateX() + this.vX);
         this.flipBook.setTranslateY(this.flipBook.getTranslateY() + vY);
-
-        if (this.stopArea.contains(getCenterX(), getCenterY())) {
-            this.vX = 0;
-            this.vY = 0;
-        }
     }
     
     /**
@@ -79,19 +78,19 @@ public class Ship extends Sprite {
      * @param dPressed 
      */
     public void move(boolean wPressed, boolean aPressed, boolean sPressed, boolean dPressed) {
-        if (wPressed) this.vY = -CONSTANT_VELOCITY;
-        if (sPressed) this.vY = CONSTANT_VELOCITY;
-        if (!sPressed && !wPressed) this.vY = 0;
-        if (aPressed) this.vX = -CONSTANT_VELOCITY;
-        if (dPressed) this.vX = CONSTANT_VELOCITY;
-        if (!aPressed && !dPressed) this.vX = 0;
-        if (this.vX == 0 && this.vY == 0) return;
-        
-        double angle = Math.atan2(this.vY, this.vX);
-        this.vX = Math.cos(angle) * CONSTANT_VELOCITY;
-        this.vY = Math.sin(angle) * CONSTANT_VELOCITY;
-        
-        this.imageView.rotateProperty().setValue(Math.toDegrees(angle));
+            if (wPressed) this.vY = -CONSTANT_VELOCITY;
+            if (sPressed) this.vY = CONSTANT_VELOCITY;
+            if ((!sPressed && !wPressed) || this.outOfBoundWidth) this.vY = 0;
+            if (aPressed) this.vX = -CONSTANT_VELOCITY;
+            if (dPressed) this.vX = CONSTANT_VELOCITY;
+            if ((!aPressed && !dPressed) || this.outOfBoundHeight) this.vX = 0;
+            if (this.vX == 0 && this.vY == 0) return;
+
+            double angle = Math.atan2(this.vY, this.vX);
+            this.vX = Math.cos(angle) * CONSTANT_VELOCITY;
+            this.vY = Math.sin(angle) * CONSTANT_VELOCITY;
+
+            this.imageView.rotateProperty().setValue(Math.toDegrees(angle));
     }
   
     public Missile fire(double mousePositionX, double mousePositionY) {
@@ -143,15 +142,12 @@ public class Ship extends Sprite {
         }
     }
     
-    /**
-     * Stops the ship from thrusting forward.
-     *
-     * @param screenX the screen's X coordinate to stop the ship.
-     * @param screenY the screen's Y coordinate to stop the ship.
-     */
-    public void applyTheBrakes(double screenX, double screenY) {
-        this.stopArea.setCenterX(screenX);
-        this.stopArea.setCenterY(screenY);
+    public void setOutOfBoundHeight(boolean outOfBound) {
+        this.outOfBoundHeight = outOfBound;
+    }
+    
+    public void setOutOfBoundWidth(boolean outOfBound) {
+        this.outOfBoundWidth = outOfBound;
     }
     
     private FadeTransition getShieldFadeTransition() {
@@ -213,14 +209,7 @@ public class Ship extends Sprite {
         setCollisionBounds(this.hitBounds);
         return hitbound;
     }
-    
-    private Circle getStopArea() {
-        Circle c = new Circle();
-        c.setRadius(40);
-        c.setStroke(Color.ORANGE);
-        return c;
-    }
-    
+
     private Missile getMissle(String filepath, double angle) {
         Missile fireMissile = new Missile(filepath);
         double offsetX = (this.imageView.getBoundsInLocal().getWidth() - fireMissile.getNode().getBoundsInLocal().getWidth()) / 2;

@@ -49,38 +49,5 @@ public class Atom extends Sprite {
      */
     public ImageView getImageViewNode() {
         return (ImageView) getNode();
-    }
-
-    /**
-     * Animate an implosion. Once done remove from the game world
-     *
-     * @param gameWorld - game world
-     */
-    public void implode(final GameEngine gameWorld) {
-        this.vX = this.vY = 0;
-        Node currentNode = getNode();
-        
-        Sprite explosion = new Atom(ResourcesManager.EXPLOSION);
-        if (!(this instanceof Missile)) {
-            explosion.getNode().setTranslateX(this.getNode().getTranslateX());
-            explosion.getNode().setTranslateY(this.getNode().getTranslateY());
-            gameWorld.getSceneNodes().getChildren().add(explosion.getNode());
-        }
-        
-        FadeTransition ft = new FadeTransition(Duration.millis(300), currentNode);
-        ft.setFromValue(35);
-        ft.setToValue(0);
-        ft.setOnFinished((ActionEvent event) -> {
-            this.isDead = true;
-            gameWorld.getSceneNodes().getChildren().remove(currentNode);
-            gameWorld.getSceneNodes().getChildren().remove(explosion.getNode());
-        });
-        ft.play();
-    }
-
-    @Override
-    public void handleDeath(GameEngine gameWorld) {
-        implode(gameWorld);
-        super.handleDeath(gameWorld);
-    }
+    }  
 }
