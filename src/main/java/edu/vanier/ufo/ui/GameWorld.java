@@ -34,13 +34,10 @@ import javafx.util.Duration;
  * @author cdea
  */
 public class GameWorld extends GameEngine {
-
-    // mouse pt label
-    private final Label mousePtLabel;
-    // mouse press pt label
-    private final Label mousePressPtLabel;
     
     private final Ship spaceShip;
+    
+    private HeadsUpDisplay hud;
     
     private double mousePositionX;
     private double mousePositionY;
@@ -56,8 +53,8 @@ public class GameWorld extends GameEngine {
     
     public GameWorld(int fps, String title) {
         super(fps, title);
-        this.mousePtLabel = new Label();
-        this.mousePressPtLabel = new Label();
+        this.mousePositionX = 0d;
+        this.mousePositionY = 0d;
         this.spaceShip = new Ship();
         this.wPressed = new SimpleBooleanProperty();
         this.aPressed = new SimpleBooleanProperty();
@@ -70,10 +67,6 @@ public class GameWorld extends GameEngine {
                 spaceShip.move(wPressed.get(), aPressed.get(), sPressed.get(), dPressed.get());
             }
         };
-        
-        this.mousePositionX = 0d;
-        this.mousePositionY = 0d;
-        
     }
 
     /**
@@ -107,14 +100,8 @@ public class GameWorld extends GameEngine {
         
         // mouse point
         VBox stats = new VBox();
+        
         HBox row1 = new HBox();
-        this.mousePtLabel.setTextFill(Color.WHITE);
-        row1.getChildren().add(this.mousePtLabel);
-        HBox row2 = new HBox();
-        this.mousePressPtLabel.setTextFill(Color.WHITE);
-        row2.getChildren().add(this.mousePressPtLabel);
-        stats.getChildren().add(row1);
-        stats.getChildren().add(row2);
         
         //TODO: Add the HUD here.
         getSceneNodes().getChildren().add(0, stats);
@@ -123,6 +110,7 @@ public class GameWorld extends GameEngine {
 
         // load sound files
         getSoundManager().loadSoundEffects("laser", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER));
+        getSoundManager().loadSoundEffects("explosion", getClass().getClassLoader().getResource(ResourcesManager.SOUND_EXPLOSION));
     }
 
     /**
@@ -159,7 +147,6 @@ public class GameWorld extends GameEngine {
         });
         
         primaryStage.getScene().setOnMouseMoved((MouseEvent event) -> {
-            this.mousePtLabel.setText("Mouse PT = (" + event.getX() + ", " + event.getY() + ")");
             this.mousePositionX = event.getSceneX();
             this.mousePositionY = event.getSceneY();
         });
@@ -227,8 +214,7 @@ public class GameWorld extends GameEngine {
     /**
      * Change the direction of the moving object when it encounters the walls. 
      *
-     * @param sprite The sprite to update based on the wall boundaries. TODO The
-     * ship has got issues.
+     * @param sprite The sprite to update based on the wall boundaries.
      */
     private void bounceOffWalls(Sprite sprite) {
         Node displayNode;
@@ -320,6 +306,7 @@ public class GameWorld extends GameEngine {
             if (spriteA.collide(spriteB) && spriteB instanceof Atom) {
                     handleDeath((Atom)spriteA);
                     handleDeath((Atom)spriteB);
+                    getSoundManager().playSound("explosion");
             }
         }
         return false;

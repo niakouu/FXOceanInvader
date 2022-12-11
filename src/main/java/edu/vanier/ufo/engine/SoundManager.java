@@ -38,10 +38,11 @@ public class SoundManager {
      */
     public void loadSoundEffects(String id, URL url) {
         AudioClip sound = new AudioClip(url.toExternalForm());
+        sound.setVolume(0.4);
         this.soundEffectsMap.put(id, sound);
     }
 
-    /**
+    /**w
      * Lookup a name resource to play sound based on the id.
      *
      * @param id identifier for a sound to be played.
