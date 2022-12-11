@@ -2,7 +2,6 @@ package edu.vanier.ufo.game;
 
 import edu.vanier.ufo.helpers.ResourcesManager;
 import edu.vanier.ufo.engine.Sprite;
-import java.util.List;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
@@ -23,6 +22,8 @@ import javafx.util.Duration;
 public class Ship extends Sprite {
     
     private final static double CONSTANT_VELOCITY = 3d;
+    
+    private final static int NUMBER_LIFES = 3;
 
     private boolean shieldOn;
     
@@ -36,19 +37,20 @@ public class Ship extends Sprite {
     
     private final Group flipBook;
     
-    private String rocketName;
-    
     private final FadeTransition shieldFade;
     
+    private int lifesLeft;
+    
     private int rocketNameIterationCounter;
+    
+    private String rocketName;
 
     public Ship() {
         loadImage();
         
         this.rocketNameIterationCounter = 0;
-        this.outOfBoundWidth = false;
-        this.outOfBoundHeight = false;
-        this.rocketName = ResourcesManager.ROCKET_FIRE;
+        this.rocketName = ResourcesManager.weapons[rocketNameIterationCounter];
+        this.lifesLeft = NUMBER_LIFES;
         
         this.flipBook = getFlipBook();
         setNode(this.flipBook);
@@ -78,19 +80,19 @@ public class Ship extends Sprite {
      * @param dPressed 
      */
     public void move(boolean wPressed, boolean aPressed, boolean sPressed, boolean dPressed) {
-            if (wPressed) this.vY = -CONSTANT_VELOCITY;
-            if (sPressed) this.vY = CONSTANT_VELOCITY;
-            if ((!sPressed && !wPressed) || this.outOfBoundWidth) this.vY = 0;
-            if (aPressed) this.vX = -CONSTANT_VELOCITY;
-            if (dPressed) this.vX = CONSTANT_VELOCITY;
-            if ((!aPressed && !dPressed) || this.outOfBoundHeight) this.vX = 0;
-            if (this.vX == 0 && this.vY == 0) return;
+        if (wPressed) this.vY = -CONSTANT_VELOCITY;
+        if (sPressed) this.vY = CONSTANT_VELOCITY;
+        if ((!sPressed && !wPressed) || this.outOfBoundWidth) this.vY = 0;
+        if (aPressed) this.vX = -CONSTANT_VELOCITY;
+        if (dPressed) this.vX = CONSTANT_VELOCITY;
+        if ((!aPressed && !dPressed) || this.outOfBoundHeight) this.vX = 0;
+        if (this.vX == 0 && this.vY == 0) return;
 
-            double angle = Math.atan2(this.vY, this.vX);
-            this.vX = Math.cos(angle) * CONSTANT_VELOCITY;
-            this.vY = Math.sin(angle) * CONSTANT_VELOCITY;
+        double angle = Math.atan2(this.vY, this.vX);
+        this.vX = Math.cos(angle) * CONSTANT_VELOCITY;
+        this.vY = Math.sin(angle) * CONSTANT_VELOCITY;
 
-            this.imageView.rotateProperty().setValue(Math.toDegrees(angle));
+        this.imageView.rotateProperty().setValue(Math.toDegrees(angle));
     }
   
     public Missile fire(double mousePositionX, double mousePositionY) {
@@ -134,11 +136,11 @@ public class Ship extends Sprite {
     }
     
     public void changeWeapon() {
-        List<String> weapons = ResourcesManager.weapons;
-        if(++this.rocketNameIterationCounter < weapons.size()) this.rocketName = weapons.get(this.rocketNameIterationCounter);
+        String[] weapons = ResourcesManager.weapons;
+        if(++this.rocketNameIterationCounter < weapons.length) this.rocketName = weapons[this.rocketNameIterationCounter];
         else {
             this.rocketNameIterationCounter = 0;
-            this.rocketName = weapons.get(this.rocketNameIterationCounter);
+            this.rocketName = weapons[this.rocketNameIterationCounter];
         }
     }
     
@@ -148,6 +150,18 @@ public class Ship extends Sprite {
     
     public void setOutOfBoundWidth(boolean outOfBound) {
         this.outOfBoundWidth = outOfBound;
+    }
+    
+    public void setLifesLeft(int lifesLeft) {
+        this.lifesLeft = lifesLeft;
+    }
+    
+    public int getLifesLeft() {
+        return this.lifesLeft;
+    }
+    
+    public void setIsDead(boolean isDead) {
+        this.isDead = isDead;
     }
     
     private FadeTransition getShieldFadeTransition() {
@@ -189,7 +203,7 @@ public class Ship extends Sprite {
     }
     
     private void loadImage() {
-        setImage(new Image(ResourcesManager.SPACE_STAR_SHIP, false));
+        setImage(new Image(ResourcesManager.SPACE_SHIP_1, false));
         this.imageView.setCache(true);
         this.imageView.setCacheHint(CacheHint.SPEED);
         this.imageView.setManaged(false);

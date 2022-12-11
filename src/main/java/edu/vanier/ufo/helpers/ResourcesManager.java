@@ -1,10 +1,5 @@
 package edu.vanier.ufo.helpers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-
 
 /**
  * A resource manager providing useful resource definitions used in this game.
@@ -18,53 +13,51 @@ public class ResourcesManager {
      */
     public static final int FRAMES_PER_SECOND = 85;
     private static final String RESOURCES_FOLDER = "";
-    private static final String IMAGES_FOLDER = RESOURCES_FOLDER + "images/";
+    private static final String IMAGES_FOLDER = RESOURCES_FOLDER + "images/found/";
     private static final String SOUNDS_FOLDER = RESOURCES_FOLDER + "sounds/";
     
-    // Backround image
-    public static final String BACKROUND = IMAGES_FOLDER + "background.png";
+    // Backround images tiles
+    public static final String COLD_WATER = IMAGES_FOLDER + "coldwater.gif";
+    public static final String COLD_WATER_DEEP = IMAGES_FOLDER + "coldwaterdeepwater.gif";
+    public static final String COLD_WATER_ICE = IMAGES_FOLDER + "coldwaterice.gif";
+    public static final String OCEAN_WATER = IMAGES_FOLDER + "ocean_tile.gif";
     
     // Ship images
-    public static final String SPACE_SHIP = IMAGES_FOLDER + "spiked ship.png";
-    public static final String SPACE_STAR_SHIP = IMAGES_FOLDER + "starship.png";
-    public static final String SPACE_TANK = IMAGES_FOLDER + "tank.png";
+    public static final String SPACE_SHIP_1 = IMAGES_FOLDER + "ship_level1.png";
+    public static final String SPACE_SHIP_2 = IMAGES_FOLDER + "ship_level2.png";
+    public static final String SPACE_SHIP_3 = IMAGES_FOLDER + "ship_level3.png";
     
     // Rocket images
-    public static final String ROCKET_SMALL = IMAGES_FOLDER + "rocket.png";
-    public static final String ROCKET_FIRE = IMAGES_FOLDER + "missile.png";
+    public static final String MISSILE_RED = IMAGES_FOLDER + "missile_red.png";
+    public static final String MISSILE_THREE_COLOR = IMAGES_FOLDER + "missile_three_color.png";
     
     // Explosion gif
-    public static final String EXPLOSION = IMAGES_FOLDER + "explosion.gif";
+    public static final String EXPLOSION = IMAGES_FOLDER + "ketchup_splash.gif";
 
     // Invader sprites.
-    public static final String INVADER_LARGE_SHIP = IMAGES_FOLDER + "large_invader_b.png";
-    public static final String INVADER_SMALL_SHIP = IMAGES_FOLDER + "small_invader_b.png";
-    public static final String INVADER_UFO = IMAGES_FOLDER + "ufo.png";
-    public static final String INVADER_CHICKEN = IMAGES_FOLDER + "rounded-chicken.png";
-    public static final String INVADER_BEE = IMAGES_FOLDER + "small-bee.png";
-    public static final String INVADER_SCI_FI = IMAGES_FOLDER + "sci-fi.png";
+    public static final String INVADER_DRAGONFISH = IMAGES_FOLDER + "invader_dragonfish.gif";
+    public static final String INVADER_HATCHEFISH = IMAGES_FOLDER + "invader_hatchefish.gif";
+    public static final String INVADER_JELLYFISH = IMAGES_FOLDER + "invader_jellyfish.gif";
+    public static final String INVADER_SHARK = IMAGES_FOLDER + "invader_shark.png";
+    public static final String INVADER_SHARK_MOVING = IMAGES_FOLDER + "invader_shark_moving.gif";
+    public static final String INVADER_VAPERFISH = IMAGES_FOLDER + "invader_vaperfish.png";
 
     // Sound effect files
     public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";    
     public static final String SOUND_EXPLOSION = SOUNDS_FOLDER + "explosion.wav";    
     
-    public static final List<String> weapons = new ArrayList<>() {{
-        add(ROCKET_FIRE);
-        add(ROCKET_SMALL);
-    }};
+    public static final String[] weapons =  {
+        MISSILE_RED,
+        MISSILE_THREE_COLOR
+    };
     
     public static final String[] INVADERS = {			
-			INVADER_UFO, INVADER_CHICKEN, INVADER_BEE,INVADER_SCI_FI,
-                        INVADER_SMALL_SHIP, INVADER_LARGE_SHIP
-	};
+	INVADER_DRAGONFISH,
+        INVADER_HATCHEFISH,
+        INVADER_JELLYFISH,
+        INVADER_SHARK,
+        INVADER_SHARK_MOVING,
+        INVADER_VAPERFISH
+    };
     
-    public static HashMap<Integer, String> getInvaderSprites() {
-        HashMap<Integer, String> invaders = new HashMap<>();
-        invaders.put(1, INVADER_BEE);
-        invaders.put(2, INVADER_LARGE_SHIP);
-        invaders.put(3, INVADER_SMALL_SHIP);
-        invaders.put(4, INVADER_CHICKEN);
-        invaders.put(5, INVADER_SCI_FI);
-        return invaders;
-    }
 }

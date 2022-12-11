@@ -8,11 +8,9 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.util.Random;
 import javafx.animation.AnimationTimer;
@@ -22,6 +20,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 /**
@@ -39,6 +38,8 @@ public class GameWorld extends GameEngine {
     
     private HeadsUpDisplay hud;
     
+    private boolean gameEnd;
+    
     private double mousePositionX;
     private double mousePositionY;
     
@@ -55,6 +56,7 @@ public class GameWorld extends GameEngine {
         super(fps, title);
         this.mousePositionX = 0d;
         this.mousePositionY = 0d;
+        this.gameEnd = false;
         this.spaceShip = new Ship();
         this.wPressed = new SimpleBooleanProperty();
         this.aPressed = new SimpleBooleanProperty();
@@ -82,9 +84,10 @@ public class GameWorld extends GameEngine {
         primaryStage.setTitle(getWindowTitle());
 
         // Create the scene
+        
         setSceneNodes(new Group());
         setGameSurface(new Scene(getSceneNodes(), 1000, 600));
-
+        
         // Change the background of the main scene.
         getGameSurface().setFill(Color.BLACK);
         primaryStage.setScene(getGameSurface());
@@ -122,33 +125,38 @@ public class GameWorld extends GameEngine {
         System.out.println("Ship's center is (" + this.spaceShip.getCenterX() + ", " + this.spaceShip.getCenterY() + ")");
         
         primaryStage.getScene().setOnKeyPressed((KeyEvent event) -> {
-            checkKeyIfKeyPressed(event, true);
-            
-            // Shield
-            if (event.getCode() == KeyCode.E) this.spaceShip.shieldToggle();
-            
-            // Fire
-            if (event.getCode() == KeyCode.SPACE) {
-                Missile missile = this.spaceShip.fire(this.mousePositionX, this.mousePositionY);
-                getSpriteManager().addSprites(missile);
+            if (!this.gameEnd) {
+                checkKeyIfKeyPressed(event, true);
 
-                getSoundManager().playSound("laser");
-                getSceneNodes().getChildren().add(0, missile.getNode());
+                // Shield
+                if (event.getCode() == KeyCode.E) this.spaceShip.shieldToggle();
+
+                // Fire
+                if (event.getCode() == KeyCode.SPACE) {
+                    Missile missile = this.spaceShip.fire(this.mousePositionX, this.mousePositionY);
+                    getSpriteManager().addSprites(missile);
+
+                    getSoundManager().playSound("laser");
+                    getSceneNodes().getChildren().add(0, missile.getNode());
+                }
+
+                // Change weapon
+                if (event.getCode() == KeyCode.C) {
+                    this.spaceShip.changeWeapon();
+                }
             }
             
-            // Change weapon
-            if (event.getCode() == KeyCode.C) {
-                this.spaceShip.changeWeapon();
-            }
         });
-        
+
         primaryStage.getScene().setOnKeyReleased((event) -> {
-            checkKeyIfKeyPressed(event, false);
+            if (!this.gameEnd) checkKeyIfKeyPressed(event, false);
         });
-        
+
         primaryStage.getScene().setOnMouseMoved((MouseEvent event) -> {
-            this.mousePositionX = event.getSceneX();
-            this.mousePositionY = event.getSceneY();
+            if (!this.gameEnd) {
+                this.mousePositionX = event.getSceneX();
+                this.mousePositionY = event.getSceneY();
+            }
         });
     }
 
@@ -162,7 +170,7 @@ public class GameWorld extends GameEngine {
         Random rnd = new Random();
         Scene gameSurface = getGameSurface();
         for (int i = 0; i < numSpheres; i++) {
-            Atom atom = new Atom(ResourcesManager.INVADER_SCI_FI);
+            Atom atom = new Atom(ResourcesManager.INVADER_SHARK);
             ImageView atomImage = atom.getImageViewNode();
             
             // Randomize the location of each newly generated atom.
@@ -207,7 +215,7 @@ public class GameWorld extends GameEngine {
         // advance object
         sprite.update();
         if (sprite instanceof Missile missile) removeMissiles(missile);
-        else if (sprite instanceof Ship) stopShip();
+        else if (sprite instanceof Ship) stopShipAtBounds();
         else bounceOffWalls(sprite);
     }
 
@@ -259,7 +267,7 @@ public class GameWorld extends GameEngine {
         }
     }
     
-    private void stopShip() {
+    private void stopShipAtBounds() {
         Node shipNode;
         if ((shipNode = this.spaceShip.getNode()) != null) {
             if (shipNode.getTranslateX() > (getGameSurface().getWidth()
@@ -296,9 +304,16 @@ public class GameWorld extends GameEngine {
         if (spriteA instanceof Missile && spriteB instanceof Missile)
             return false;
         
-        // Atom hits Ship -> loss of hearts
-        if (spriteA instanceof Atom && spriteB instanceof Ship) {
+        // Atom hits Ship -> loss of heart
+        if (spriteA instanceof Atom && spriteB instanceof Ship && spriteA.collide(spriteB)) {
             
+            this.spaceShip.setLifesLeft(this.spaceShip.getLifesLeft() - 1);
+            System.out.println(this.spaceShip.getLifesLeft());
+            if (this.spaceShip.getLifesLeft() < 0) {
+                System.out.println("Game Over!");
+                //this.gameEnd = true;
+                //stopShip();
+            }
         }
         
         // Missile hitting sprite
@@ -354,5 +369,12 @@ public class GameWorld extends GameEngine {
         if (event.getCode() == KeyCode.A) aPressed.set(keyPressed);
         if (event.getCode() == KeyCode.S) sPressed.set(keyPressed);
         if (event.getCode() == KeyCode.D) dPressed.set(keyPressed);
+    }
+    
+    private void stopShip() {
+        this.wPressed.setValue(false);
+        this.aPressed.setValue(false);
+        this.sPressed.setValue(false);
+        this.dPressed.setValue(false);
     }
 }
