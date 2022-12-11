@@ -1,5 +1,6 @@
 package edu.vanier.ufo.ui;
 
+import edu.vanier.ufo.ui.hud.HeadsUpDisplay;
 import edu.vanier.ufo.engine.*;
 import edu.vanier.ufo.game.*;
 import edu.vanier.ufo.helpers.ResourcesManager;
@@ -9,8 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.Random;
 import javafx.animation.AnimationTimer;
@@ -33,6 +32,10 @@ import javafx.util.Duration;
  * @author cdea
  */
 public class GameWorld extends GameEngine {
+    
+    private final static int LEVELS_NUMBER = 3;
+    
+    private final Level[] levels;
     
     private final Ship spaceShip;
     
@@ -57,7 +60,9 @@ public class GameWorld extends GameEngine {
         this.mousePositionX = 0d;
         this.mousePositionY = 0d;
         this.gameEnd = false;
+        this.levels = new Level[LEVELS_NUMBER];
         this.spaceShip = new Ship();
+        this.hud = new HeadsUpDisplay();
         this.wPressed = new SimpleBooleanProperty();
         this.aPressed = new SimpleBooleanProperty();
         this.sPressed = new SimpleBooleanProperty();
@@ -84,7 +89,6 @@ public class GameWorld extends GameEngine {
         primaryStage.setTitle(getWindowTitle());
 
         // Create the scene
-        
         setSceneNodes(new Group());
         setGameSurface(new Scene(getSceneNodes(), 1000, 600));
         
@@ -97,17 +101,14 @@ public class GameWorld extends GameEngine {
 
         // Create spheres
         generateManySpheres(5);
-
+        
+        
+        
         getSpriteManager().addSprites(this.spaceShip);
-        getSceneNodes().getChildren().add(0, this.spaceShip.getNode());
-        
-        // mouse point
-        VBox stats = new VBox();
-        
-        HBox row1 = new HBox();
+        getSceneNodes().getChildren().add(0, this.hud);
+        getSceneNodes().getChildren().add(1, this.spaceShip.getNode());
         
         //TODO: Add the HUD here.
-        getSceneNodes().getChildren().add(0, stats);
         
 
 
@@ -305,14 +306,11 @@ public class GameWorld extends GameEngine {
             return false;
         
         // Atom hits Ship -> loss of heart
-        if (spriteA instanceof Atom && spriteB instanceof Ship && spriteA.collide(spriteB)) {
-            
-            this.spaceShip.setLifesLeft(this.spaceShip.getLifesLeft() - 1);
-            System.out.println(this.spaceShip.getLifesLeft());
-            if (this.spaceShip.getLifesLeft() < 0) {
-                System.out.println("Game Over!");
-                //this.gameEnd = true;
-                //stopShip();
+        if (spriteA instanceof Atom && !(spriteA instanceof Missile) && spriteB instanceof Ship && spriteA.collide(spriteB)) {
+            handleDeath((Atom) spriteA);
+            this.gameEnd = this.hud.updateLifesDisplay();
+            if (this.gameEnd) {
+                stopShip();
             }
         }
         
@@ -322,6 +320,7 @@ public class GameWorld extends GameEngine {
                     handleDeath((Atom)spriteA);
                     handleDeath((Atom)spriteB);
                     getSoundManager().playSound("explosion");
+                    this.hud.updateScore();
             }
         }
         return false;
@@ -349,7 +348,7 @@ public class GameWorld extends GameEngine {
             getSceneNodes().getChildren().add(explosion.getNode());
         }
         
-        FadeTransition ft = new FadeTransition(Duration.millis(300), currentNode);
+        FadeTransition ft = new FadeTransition(Duration.millis(700), currentNode);
         ft.setFromValue(35);
         ft.setToValue(0);
         ft.setOnFinished((ActionEvent event) -> {

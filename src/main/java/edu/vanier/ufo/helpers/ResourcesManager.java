@@ -44,7 +44,36 @@ public class ResourcesManager {
 
     // Sound effect files
     public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";    
-    public static final String SOUND_EXPLOSION = SOUNDS_FOLDER + "explosion.wav";    
+    public static final String SOUND_EXPLOSION = SOUNDS_FOLDER + "explosion.wav";
+    
+    // Hearts
+    
+    public enum LifesDisplay {
+        ZERO_LIFE_LEFT {
+            @Override
+            public String toString() {
+                return IMAGES_FOLDER + "heartbar/HUD/0.png";
+            }
+        },
+        ONE_LIFE_LEFT {
+            @Override
+            public String toString() {
+                return IMAGES_FOLDER + "heartbar/HUD/1.png";
+            }
+        },
+        TWO_LIFE_LEFT {
+            @Override
+            public String toString() {
+                return IMAGES_FOLDER + "heartbar/HUD/2.png";
+            }
+        },
+        THREE_LIFE_LEFT {
+            @Override
+            public String toString() {
+                return IMAGES_FOLDER + "heartbar/HUD/3.png";
+            }
+        };
+    }
     
     public static final String[] weapons =  {
         MISSILE_RED,

@@ -12,5 +12,5 @@ public class Level {
     
     private String background;
     
-    
+    private int levelId;
 }

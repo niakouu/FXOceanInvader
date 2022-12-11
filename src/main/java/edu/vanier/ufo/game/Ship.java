@@ -22,8 +22,6 @@ import javafx.util.Duration;
 public class Ship extends Sprite {
     
     private final static double CONSTANT_VELOCITY = 3d;
-    
-    private final static int NUMBER_LIFES = 3;
 
     private boolean shieldOn;
     
@@ -39,8 +37,6 @@ public class Ship extends Sprite {
     
     private final FadeTransition shieldFade;
     
-    private int lifesLeft;
-    
     private int rocketNameIterationCounter;
     
     private String rocketName;
@@ -50,7 +46,6 @@ public class Ship extends Sprite {
         
         this.rocketNameIterationCounter = 0;
         this.rocketName = ResourcesManager.weapons[rocketNameIterationCounter];
-        this.lifesLeft = NUMBER_LIFES;
         
         this.flipBook = getFlipBook();
         setNode(this.flipBook);
@@ -150,18 +145,6 @@ public class Ship extends Sprite {
     
     public void setOutOfBoundWidth(boolean outOfBound) {
         this.outOfBoundWidth = outOfBound;
-    }
-    
-    public void setLifesLeft(int lifesLeft) {
-        this.lifesLeft = lifesLeft;
-    }
-    
-    public int getLifesLeft() {
-        return this.lifesLeft;
-    }
-    
-    public void setIsDead(boolean isDead) {
-        this.isDead = isDead;
     }
     
     private FadeTransition getShieldFadeTransition() {
