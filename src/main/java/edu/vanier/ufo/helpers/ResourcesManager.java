@@ -47,7 +47,6 @@ public class ResourcesManager {
     public static final String SOUND_EXPLOSION = SOUNDS_FOLDER + "explosion.wav";
     
     // Hearts
-    
     public enum LifesDisplay {
         ZERO_LIFE_LEFT {
             @Override

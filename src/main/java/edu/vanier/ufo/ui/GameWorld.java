@@ -19,6 +19,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -89,6 +90,7 @@ public class GameWorld extends GameEngine {
         primaryStage.setTitle(getWindowTitle());
 
         // Create the scene
+        TilePane background;
         setSceneNodes(new Group());
         setGameSurface(new Scene(getSceneNodes(), 1000, 600));
         
@@ -102,16 +104,10 @@ public class GameWorld extends GameEngine {
         // Create spheres
         generateManySpheres(5);
         
-        
-        
         getSpriteManager().addSprites(this.spaceShip);
         getSceneNodes().getChildren().add(0, this.hud);
         getSceneNodes().getChildren().add(1, this.spaceShip.getNode());
         
-        //TODO: Add the HUD here.
-        
-
-
         // load sound files
         getSoundManager().loadSoundEffects("laser", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER));
         getSoundManager().loadSoundEffects("explosion", getClass().getClassLoader().getResource(ResourcesManager.SOUND_EXPLOSION));
@@ -123,7 +119,6 @@ public class GameWorld extends GameEngine {
      * @param primaryStage The primary stage (app window).
      */
     private void setupInput(Stage primaryStage) {
-        System.out.println("Ship's center is (" + this.spaceShip.getCenterX() + ", " + this.spaceShip.getCenterY() + ")");
         
         primaryStage.getScene().setOnKeyPressed((KeyEvent event) -> {
             if (!this.gameEnd) {
@@ -344,7 +339,7 @@ public class GameWorld extends GameEngine {
         Sprite explosion = new Atom(ResourcesManager.EXPLOSION);
         if (!(atom instanceof Missile)) {
             explosion.getNode().setTranslateX(atom.getNode().getTranslateX());
-            explosion.getNode().setTranslateY(atom.getNode().getTranslateY());
+            explosion.getNode().setTranslateY(atom.getNode().getTranslateY() - atom.getImage().getHeight());
             getSceneNodes().getChildren().add(explosion.getNode());
         }
         

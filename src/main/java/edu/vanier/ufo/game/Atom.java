@@ -1,15 +1,8 @@
 package edu.vanier.ufo.game;
 
-import edu.vanier.ufo.engine.GameEngine;
 import edu.vanier.ufo.engine.Sprite;
-import edu.vanier.ufo.helpers.ResourcesManager;
-import javafx.animation.FadeTransition;
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.util.Duration;
-
 /**
  * A spherical looking object (Atom) with a random radius, color, and velocity.
  * When two atoms collide each will fade and become removed from the scene. The
@@ -27,8 +20,10 @@ public class Atom extends Sprite {
      */
     public Atom(String imagePath) {
         ImageView newAtom = new ImageView();
-        Image shipImage = new Image(imagePath, true);        
+        Image shipImage = new Image(imagePath, true); 
         newAtom.setImage(shipImage);
+        this.setImage(shipImage);
+        
         this.node = newAtom;
         this.collidingNode = newAtom;
     }
@@ -50,4 +45,5 @@ public class Atom extends Sprite {
     public ImageView getImageViewNode() {
         return (ImageView) getNode();
     }  
+    
 }
