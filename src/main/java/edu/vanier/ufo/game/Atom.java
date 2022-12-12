@@ -35,6 +35,8 @@ public class Atom extends Sprite {
     public void update() {
         getNode().setTranslateX(getNode().getTranslateX() + this.vX);
         getNode().setTranslateY(getNode().getTranslateY() + this.vY);
+        
+        this.getNode().setScaleX(this.vX < 0 ? -1 : 1);
     }
 
     /**

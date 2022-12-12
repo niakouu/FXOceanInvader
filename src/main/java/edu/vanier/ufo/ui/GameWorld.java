@@ -5,7 +5,6 @@ import edu.vanier.ufo.engine.*;
 import edu.vanier.ufo.game.*;
 import edu.vanier.ufo.helpers.ResourcesManager;
 import javafx.scene.CacheHint;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
@@ -17,10 +16,18 @@ import javafx.animation.FadeTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.scene.effect.Reflection;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.TilePane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import static javafx.scene.layout.BackgroundPosition.CENTER;
+import static javafx.scene.layout.BackgroundRepeat.REPEAT;
+import static javafx.scene.layout.BackgroundSize.DEFAULT;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 /**
@@ -40,7 +47,7 @@ public class GameWorld extends GameEngine {
     
     private final Ship spaceShip;
     
-    private HeadsUpDisplay hud;
+    private final HeadsUpDisplay hud;
     
     private boolean gameEnd;
     
@@ -86,31 +93,91 @@ public class GameWorld extends GameEngine {
     public void initialize(final Stage primaryStage) {
         this.move.start();
         
+        getSceneNodes().setBackground(new Background(new BackgroundImage(new Image(ResourcesManager.OCEAN_WATER), REPEAT, REPEAT, CENTER, DEFAULT)));
+        
         // Sets the window title
         primaryStage.setTitle(getWindowTitle());
-
+        
         // Create the scene
-        TilePane background;
-        setSceneNodes(new Group());
         setGameSurface(new Scene(getSceneNodes(), 1000, 600));
         
         // Change the background of the main scene.
-        getGameSurface().setFill(Color.BLACK);
+        //Image background = new Image(ResourcesManager.OCEAN_WATER);
+        //getGameSurface().setFill(new ImagePattern(background, 0, 14, background.getWidth(), background.getHeight(), false));
+        
         primaryStage.setScene(getGameSurface());
 
         // Setup Game input
         setupInput(primaryStage);
+        
+        // Hud margin
+        VBox margins = new VBox(this.hud);
+        VBox.setMargin(this.hud, new Insets(10d));
 
         // Create spheres
         generateManySpheres(5);
         
         getSpriteManager().addSprites(this.spaceShip);
-        getSceneNodes().getChildren().add(0, this.hud);
+        getSceneNodes().getChildren().add(0, margins);
         getSceneNodes().getChildren().add(1, this.spaceShip.getNode());
         
         // load sound files
         getSoundManager().loadSoundEffects("laser", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER));
         getSoundManager().loadSoundEffects("explosion", getClass().getClassLoader().getResource(ResourcesManager.SOUND_EXPLOSION));
+    }
+    
+    
+    /**
+     * Each sprite will update it's velocity and bounce off wall borders.
+     *
+     * @param sprite - An atomic particle (a sphere).
+     */
+    @Override
+    protected void handleUpdate(Sprite sprite) {
+        // advance object
+        sprite.update();
+        if (sprite instanceof Missile missile) removeMissiles(missile);
+        else if (sprite instanceof Ship) stopShipAtBounds();
+        else bounceOffWalls(sprite);
+    }
+    
+    /**
+     * How to handle the collision of two sprite objects. Stops the particle by
+     * zeroing out the velocity if a collision occurred. /** How to handle the
+     * collision of two sprite objects. Stops the particle by
+     *
+     *
+     * @param spriteA Sprite from the first list.
+     * @param spriteB Sprite from the second list.
+     * @return boolean returns a true if the two sprites have collided otherwise
+     * false.
+     */
+    @Override
+    protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
+        
+        // Missile hits missile will do nothing
+        if (spriteA instanceof Missile && spriteB instanceof Missile)
+            return false;
+        
+        // Atom hits Ship -> loss of heart
+        if (spriteA instanceof Atom && !(spriteA instanceof Missile) && spriteB instanceof Ship && spriteA.collide(spriteB)) {
+            handleDeath((Atom) spriteA);
+            this.gameEnd = this.hud.updateLifesDisplay();
+            if (this.gameEnd) {
+                stopShip();
+            }
+        }
+        
+        // Missile hitting sprite
+        if (spriteA instanceof Missile) {
+            if (spriteA.collide(spriteB) && spriteB instanceof Atom) {
+                    handleDeath((Atom)spriteA);
+                    handleDeath((Atom)spriteB);
+                    getSoundManager().playSound("explosion");
+                    this.hud.updateScore();
+            }
+        }
+        return false;
     }
 
     /**
@@ -164,7 +231,7 @@ public class GameWorld extends GameEngine {
      */
     private void generateManySpheres(int numSpheres) {
         Random rnd = new Random();
-        Scene gameSurface = getGameSurface();
+        Scene gameSurface = this.getGameSurface();
         for (int i = 0; i < numSpheres; i++) {
             Atom atom = new Atom(ResourcesManager.INVADER_SHARK);
             ImageView atomImage = atom.getImageViewNode();
@@ -199,20 +266,6 @@ public class GameWorld extends GameEngine {
             // add sprite's 
             getSceneNodes().getChildren().add(atom.getNode());
         }
-    }
-
-    /**
-     * Each sprite will update it's velocity and bounce off wall borders.
-     *
-     * @param sprite - An atomic particle (a sphere).
-     */
-    @Override
-    protected void handleUpdate(Sprite sprite) {
-        // advance object
-        sprite.update();
-        if (sprite instanceof Missile missile) removeMissiles(missile);
-        else if (sprite instanceof Ship) stopShipAtBounds();
-        else bounceOffWalls(sprite);
     }
 
     /**
@@ -281,47 +334,8 @@ public class GameWorld extends GameEngine {
                 this.wPressed.setValue(false);
         }
     }
-
-    /**
-     * How to handle the collision of two sprite objects. Stops the particle by
-     * zeroing out the velocity if a collision occurred. /** How to handle the
-     * collision of two sprite objects. Stops the particle by
-     *
-     *
-     * @param spriteA Sprite from the first list.
-     * @param spriteB Sprite from the second list.
-     * @return boolean returns a true if the two sprites have collided otherwise
-     * false.
-     */
-    @Override
-    protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
-        
-        // Missile hits missile will do nothing
-        if (spriteA instanceof Missile && spriteB instanceof Missile)
-            return false;
-        
-        // Atom hits Ship -> loss of heart
-        if (spriteA instanceof Atom && !(spriteA instanceof Missile) && spriteB instanceof Ship && spriteA.collide(spriteB)) {
-            handleDeath((Atom) spriteA);
-            this.gameEnd = this.hud.updateLifesDisplay();
-            if (this.gameEnd) {
-                stopShip();
-            }
-        }
-        
-        // Missile hitting sprite
-        if (spriteA instanceof Missile) {
-            if (spriteA.collide(spriteB) && spriteB instanceof Atom) {
-                    handleDeath((Atom)spriteA);
-                    handleDeath((Atom)spriteB);
-                    getSoundManager().playSound("explosion");
-                    this.hud.updateScore();
-            }
-        }
-        return false;
-    }
-
-    public void handleDeath(Atom atom) {
+    
+    private void handleDeath(Atom atom) {
         implode(atom);
         removeAtom(atom);
     }

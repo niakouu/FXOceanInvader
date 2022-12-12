@@ -1,6 +1,5 @@
 package edu.vanier.ufo.helpers;
 
-
 /**
  * A resource manager providing useful resource definitions used in this game.
  *
@@ -16,7 +15,7 @@ public class ResourcesManager {
     private static final String IMAGES_FOLDER = RESOURCES_FOLDER + "images/found/";
     private static final String SOUNDS_FOLDER = RESOURCES_FOLDER + "sounds/";
     
-    // Backround images tiles
+    // Background fxml tiles
     public static final String COLD_WATER = IMAGES_FOLDER + "coldwater.gif";
     public static final String COLD_WATER_DEEP = IMAGES_FOLDER + "coldwaterdeepwater.gif";
     public static final String COLD_WATER_ICE = IMAGES_FOLDER + "coldwaterice.gif";

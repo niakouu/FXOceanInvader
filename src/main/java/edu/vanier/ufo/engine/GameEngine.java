@@ -5,14 +5,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -34,7 +27,7 @@ public abstract class GameEngine {
 
     private Scene gameSurface;
     
-    private Group sceneNodes;
+    private Pane sceneNodes;
     
     private static Timeline gameLoop;
     
@@ -58,6 +51,7 @@ public abstract class GameEngine {
         this.windowTitle = title;
         this.spriteManager = new SpriteManager();
         this.soundManager = new SoundManager(3);
+        this.sceneNodes = new Pane();
         
         // create and set timeline for the game loop
         buildAndSetGameLoop();
@@ -233,7 +227,7 @@ public abstract class GameEngine {
      * @return Group The root containing many child nodes to be displayed into
      * the Scene area.
      */
-    public Group getSceneNodes() {
+    public Pane getSceneNodes() {
         return this.sceneNodes;
     }
 
@@ -244,7 +238,7 @@ public abstract class GameEngine {
      * @param sceneNodes The root container having many children nodes to be
      * displayed into the Scene area.
      */
-    protected void setSceneNodes(Group sceneNodes) {
+    protected void setSceneNodes(Pane sceneNodes) {
         this.sceneNodes = sceneNodes;
     }
 

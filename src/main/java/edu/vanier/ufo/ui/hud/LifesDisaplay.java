@@ -5,6 +5,7 @@
 package edu.vanier.ufo.ui.hud;
 
 import edu.vanier.ufo.helpers.ResourcesManager;
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -24,6 +25,7 @@ public class LifesDisaplay extends HBox{
     public LifesDisaplay() {
         this.lifesCount = LIFES_MAX;
         this.heartsImage = new ImageView();
+        this.setAlignment(Pos.CENTER);
         updateHeartsImage();
         this.getChildren().add(this.heartsImage);
     }

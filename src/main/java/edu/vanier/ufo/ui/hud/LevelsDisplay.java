@@ -4,6 +4,7 @@
  */
 package edu.vanier.ufo.ui.hud;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -19,6 +20,7 @@ public class LevelsDisplay extends VBox{
     public LevelsDisplay() {
         this.levelLabel = new Label();
         this.levelLabel.setTextFill(Color.WHITE);
+        this.setAlignment(Pos.CENTER);
         this.setLevel(1);
         this.getChildren().add(this.levelLabel);
     }

@@ -5,6 +5,7 @@
 package edu.vanier.ufo.ui.hud;
 
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -22,6 +23,7 @@ public class ScoreDisplay extends VBox{
         this.scoreLabel = new Label();
         this.scoreLabel.setTextFill(Color.WHITE);
         this.score = -1;
+        this.setAlignment(Pos.CENTER);
         updateScore();
         this.getChildren().add(this.scoreLabel);
     }
