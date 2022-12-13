@@ -33,7 +33,8 @@ public class Atom extends Sprite {
         this.setTranslateX(this.getTranslateX() + this.vX);
         this.setTranslateY(this.getTranslateY() + this.vY);
         
-        //this.setScaleX(this.vX < 0 ? -1 : 1);
+        if (!(this instanceof Missile))
+            this.setScaleX(this.vX < 0 ? -1 : 1);
     }
 
     /**

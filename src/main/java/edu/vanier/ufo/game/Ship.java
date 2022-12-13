@@ -5,7 +5,9 @@ import edu.vanier.ufo.engine.Sprite;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.util.Duration;
 
 /**
@@ -35,7 +37,7 @@ public class Ship extends Sprite {
         super(imagePath);
         
         this.rocketNameIterationCounter = 0;
-        this.rocketName = ResourcesManager.weapons[rocketNameIterationCounter];
+        this.rocketName = ResourcesManager.WEAPONS_1[rocketNameIterationCounter];
         
         this.shieldFade = getShieldFadeTransition();
         
@@ -79,8 +81,8 @@ public class Ship extends Sprite {
         Missile fireMissile;
         
         Point2D centerScene = this.localToScene(
-            this.collsionBond.getCenterX(),
-            this.collsionBond.getCenterY()
+            this.collisionBond.getCenterX(),
+            this.collisionBond.getCenterY()
         );
         
         double angleShip = Math.atan2(mousePositionY - centerScene.getY(), mousePositionX - centerScene.getX());
@@ -93,7 +95,7 @@ public class Ship extends Sprite {
     }
 
     public void shieldToggle() {
-        this.collsionBond.setOpacity(.7);
+        this.collisionBond.setOpacity(.7);
         
         this.shieldFade.playFromStart();
 
@@ -101,15 +103,15 @@ public class Ship extends Sprite {
         
         if (this.shieldOn) {
             this.shieldFade.playFromStart();
-            this.collsionBond.setOpacity(.7);
+            this.collisionBond.setOpacity(.7);
         } else {
             this.shieldFade.stop();
-            this.collsionBond.setOpacity(0);
+            this.collisionBond.setOpacity(0);
         }
     }
     
     public void changeWeapon() {
-        String[] weapons = ResourcesManager.weapons;
+        String[] weapons = ResourcesManager.WEAPONS_1;
         if(++this.rocketNameIterationCounter < weapons.length) this.rocketName = weapons[this.rocketNameIterationCounter];
         else {
             this.rocketNameIterationCounter = 0;
@@ -136,10 +138,10 @@ public class Ship extends Sprite {
         shieldTransition.setDuration(Duration.millis(1000));
         shieldTransition.setCycleCount(12);
         shieldTransition.setAutoReverse(true);
-        shieldTransition.setNode(this.collsionBond);
+        shieldTransition.setNode(this.collisionBond);
         shieldTransition.setOnFinished((ActionEvent actionEvent) -> {
             this.shieldOn = false;
-            this.collsionBond.setOpacity(0);
+            this.collisionBond.setOpacity(0);
             shieldTransition.stop();
         });
         return shieldTransition;
@@ -159,8 +161,10 @@ public class Ship extends Sprite {
     }
     
     private void setUpShield() {
-        this.collsionBond.setStrokeWidth(5);
-        this.collsionBond.setStroke(Color.LIMEGREEN);
-        this.collsionBond.setFill(Color.GRAY);
+        this.collisionBond.setStrokeWidth(5);
+        this.collisionBond.setStroke(Color.LIMEGREEN);
+        this.collisionBond.setFill(new ImagePattern(
+                new Image(ResourcesManager.SHIELD)
+        ));
     }
 }

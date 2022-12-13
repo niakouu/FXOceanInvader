@@ -5,10 +5,8 @@
 package edu.vanier.ufo.ui.hud;
 
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -25,23 +23,20 @@ public class HeadsUpDisplay extends VBox{
     
     private final LifesDisaplay lifesDisplay;
     
-    public HeadsUpDisplay() {
+    public HeadsUpDisplay(int level) {
         this.scoreDisplay = new ScoreDisplay();
-        this.levelDisplay = new LevelsDisplay();
+        this.levelDisplay = new LevelsDisplay(level);
         this.lifesDisplay = new LifesDisaplay();
         this.getChildren().addAll(this.scoreDisplay, this.levelDisplay, this.lifesDisplay);
-        this.setPrefWidth(100);
-        this.setPadding(new Insets(25d));
+        this.setPrefWidth(200d);
+        this.setPadding(new Insets(40d));
+        this.setOpacity(0.8);
         this.setSpacing(10d);
         this.setBackground(new Background(new BackgroundFill(Color.BLACK, new CornerRadii(10d), Insets.EMPTY)));
     }
     
     public void updateScore() {
         this.scoreDisplay.updateScore();
-    }
-    
-    public void updateLevel(int level) {
-        this.levelDisplay.setLevel(level);
     }
     
     /**
@@ -51,5 +46,4 @@ public class HeadsUpDisplay extends VBox{
     public boolean updateLifesDisplay() {
         return this.lifesDisplay.updateLifesCount();
     }
-    
 }

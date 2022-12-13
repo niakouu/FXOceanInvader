@@ -14,7 +14,7 @@ public abstract class Sprite extends Group {
     // The JavaFX node that holds the sprite graphic.
     protected Image image;
     protected ImageView imageView;
-    protected Ellipse collsionBond;
+    protected Ellipse collisionBond;
     protected double centerX;
     protected double centerY;
     protected double vX;
@@ -30,13 +30,13 @@ public abstract class Sprite extends Group {
         this.imageView = new ImageView(this.image);
         setupImage();
         
-        this.collsionBond = new Ellipse(this.image.getWidth() / 2, this.image.getHeight() / 2);
-        this.collsionBond.setTranslateX(this.imageView.getTranslateX() + this.image.getWidth() / 2);
-        this.collsionBond.setTranslateY(this.imageView.getTranslateY() + this.image.getHeight() / 2);
-        this.collsionBond.setOpacity(0d);
+        this.collisionBond = new Ellipse(this.image.getWidth() / 2, this.image.getHeight() / 2);
+        this.collisionBond.setTranslateX(this.imageView.getTranslateX() + this.image.getWidth() / 2);
+        this.collisionBond.setTranslateY(this.imageView.getTranslateY() + this.image.getHeight() / 2);
+        this.collisionBond.setOpacity(0d);
         
         setUpGrid();
-        this.getChildren().addAll(this.imageView, this.collsionBond);
+        this.getChildren().addAll(this.imageView, this.collisionBond);
 
     }
     
@@ -76,7 +76,7 @@ public abstract class Sprite extends Group {
      * false.
      */
     public boolean collide(Sprite other) {
-        return this.collsionBond.getBoundsInLocal().intersects(this.collsionBond.sceneToLocal(other.collsionBond.localToScene(other.collsionBond.getBoundsInLocal())));
+        return this.collisionBond.getBoundsInLocal().intersects(this.collisionBond.sceneToLocal(other.collisionBond.localToScene(other.collisionBond.getBoundsInLocal())));
     }
     
     /**
@@ -120,10 +120,10 @@ public abstract class Sprite extends Group {
     }
     
     public Shape getCollisionBounds() {
-        return this.collsionBond;
+        return this.collisionBond;
     }
 
     public void setCollisionBounds(Ellipse collisionBounds) {
-        this.collsionBond = collisionBounds;
+        this.collisionBond = collisionBounds;
     }
 }

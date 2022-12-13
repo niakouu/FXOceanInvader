@@ -17,15 +17,11 @@ public class LevelsDisplay extends VBox{
     
     private final Label levelLabel;
 
-    public LevelsDisplay() {
+    public LevelsDisplay(int level) {
         this.levelLabel = new Label();
         this.levelLabel.setTextFill(Color.WHITE);
         this.setAlignment(Pos.CENTER);
-        this.setLevel(1);
-        this.getChildren().add(this.levelLabel);
-    }
-
-    public void setLevel(int level) {
         this.levelLabel.setText("Level " + level);
+        this.getChildren().add(this.levelLabel);
     }
 }

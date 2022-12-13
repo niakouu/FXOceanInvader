@@ -22,6 +22,7 @@ public class ScoreDisplay extends VBox{
     public ScoreDisplay() {
         this.scoreLabel = new Label();
         this.scoreLabel.setTextFill(Color.WHITE);
+        this.scoreLabel.setMaxSize(USE_PREF_SIZE, USE_PREF_SIZE);
         this.score = -1;
         this.setAlignment(Pos.CENTER);
         updateScore();

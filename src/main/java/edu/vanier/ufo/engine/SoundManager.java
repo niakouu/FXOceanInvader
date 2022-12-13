@@ -29,7 +29,14 @@ public class SoundManager {
         this.soundPool = Executors.newFixedThreadPool(numberOfThreads);
         this.soundEffectsMap = new HashMap<>();
     }
-
+    
+    /**
+     * Stop all threads and media players.
+     */
+    public void shutdown() {
+        this.soundPool.shutdown();
+    }
+    
     /**
      * Load a sound into a map to later be played based on the id.
      *
@@ -53,13 +60,6 @@ public class SoundManager {
             this.soundEffectsMap.get(id).play();
         };
         this.soundPool.execute(soundPlay);
-    }
-
-    /**
-     * Stop all threads and media players.
-     */
-    public void shutdown() {
-        this.soundPool.shutdown();
     }
 
 }

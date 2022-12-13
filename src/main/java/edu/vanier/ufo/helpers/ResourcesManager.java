@@ -11,19 +11,27 @@ public class ResourcesManager {
      * Used to control the speed of the game.
      */
     public static final int FRAMES_PER_SECOND = 85;
+    public static final String APPLICATION_TITLE = "JavaFX Space Invaders";
     private static final String RESOURCES_FOLDER = "";
-    private static final String IMAGES_FOLDER = RESOURCES_FOLDER + "images/found/";
+    private static final String IMAGES_FOLDER = RESOURCES_FOLDER + "images/";
     private static final String SOUNDS_FOLDER = RESOURCES_FOLDER + "sounds/";
+    private static final String FXML_FOLDER = "/fxml/";
     
     // Background fxml tiles
-    public static final String BLUE_WATER_TILE = IMAGES_FOLDER + "ocean_tile_blue.gif";
+    public static final String BLUE_WATER_TILE = IMAGES_FOLDER + "ocean_tile.gif";
     public static final String RED_WATER_TILE = IMAGES_FOLDER + "ocean_tile_red.gif";
     public static final String PINK_WATER_TILE = IMAGES_FOLDER + "ocean_tile_pink.gif";
+    
+    // Fxml files
+    public static final String FXML_MAIN_MENU = FXML_FOLDER + "main_menu.fxml";
     
     // Ship images
     public static final String SPACE_SHIP_1 = IMAGES_FOLDER + "ship_level1.png";
     public static final String SPACE_SHIP_2 = IMAGES_FOLDER + "ship_level2.png";
     public static final String SPACE_SHIP_3 = IMAGES_FOLDER + "ship_level3.png";
+    
+    // Shield images
+    public static final String SHIELD = IMAGES_FOLDER + "shield.png";
     
     // Rocket images
     public static final String MISSILE_RED = IMAGES_FOLDER + "missile_red.png";
@@ -42,7 +50,7 @@ public class ResourcesManager {
     public static final String INVADER_MONSTER_SEA_HORSE = IMAGES_FOLDER + "monster_seahorse.gif";
 
     // Sound effect files
-    public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";    
+    public static final String SOUND_LASER = SOUNDS_FOLDER + "laser.wav";    
     public static final String SOUND_EXPLOSION = SOUNDS_FOLDER + "explosion.wav";
     
     // Hearts
@@ -73,12 +81,16 @@ public class ResourcesManager {
         };
     }
     
-    public static final String[] weapons =  {
+    public static final String[] WEAPONS_1 =  {
         MISSILE_RED,
         MISSILE_THREE_COLOR
     };
     
-    public static final String[] INVADERS = {			
+    public static final String[] weapons_2 = {
+        
+    };
+    
+    public static final String[] invaders = {			
 	INVADER_DRAGONFISH,
         INVADER_HATCHEFISH,
         INVADER_JELLYFISH,
