@@ -4,6 +4,9 @@
  */
 package edu.vanier.ufo.ui.controller;
 
+import edu.vanier.ufo.engine.SoundManager;
+import edu.vanier.ufo.ui.GameWorld;
+import edu.vanier.ufo.helpers.Level;
 import edu.vanier.ufo.helpers.ResourcesManager;
 import java.io.IOException;
 import javafx.fxml.FXML;
@@ -20,10 +23,6 @@ import javafx.stage.Stage;
  */
 public class LevelChooser{
     
-    private final static int LEVELS_NUMBER = 3;
-    
-    private final Level[] levels;
-    
     private final Scene mainMenu;
     
     private final Parent initialMenuRoot;
@@ -32,23 +31,30 @@ public class LevelChooser{
     
     private final Runnable gameWorldStart;
     
+    private final SoundManager soundManager;
+    
     private GameWorld gameWorld;
 
     public LevelChooser(Stage primaryStage) throws IOException {
-        this.gameWorld = null;
+        this.gameWorld = new GameWorld(ResourcesManager.FRAMES_PER_SECOND);
         this.mainMenu = new Scene(new Group(), 1000, 600);
-        this.levels = new Level[LEVELS_NUMBER];
-        addLevels();
         
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ResourcesManager.FXML_MAIN_MENU));
         loader.setController(this);
         this.mainMenu.setRoot((Pane) loader.load()); 
         this.initialMenuRoot = this.mainMenu.getRoot();
         
+        this.soundManager = new SoundManager(1);
+        
+        this.soundManager.loadSoundEffects("menu", getClass().getClassLoader().getResource(ResourcesManager.MUSIC_MENU));
+        this.soundManager.playSound("menu");
+        
         primaryStage.setScene(this.mainMenu);
+        primaryStage.setFullScreen(true);
         primaryStage.show();
         
         this.gameWorldStart = () -> {
+            this.soundManager.stopSound("menu");
             this.gameWorld.initialize(primaryStage);
             this.gameWorld.beginGameLoop();
         };
@@ -56,27 +62,8 @@ public class LevelChooser{
         this.gameWorldEnd = () -> {
             this.gameWorld.shutdown();
             this.mainMenu.setRoot(this.initialMenuRoot);
+            this.soundManager.playSound("menu");
         };
-    }
-    
-    private void addLevels() {
-        this.levels[0] = new Level(
-                ResourcesManager.BLUE_WATER_TILE, 
-                ResourcesManager.SPACE_SHIP_1,
-                1,
-                5);
-        
-        this.levels[1] = new Level(
-                ResourcesManager.PINK_WATER_TILE, 
-                ResourcesManager.SPACE_SHIP_2,
-                2,
-                15);
-        
-        this.levels[2] = new Level(
-                ResourcesManager.RED_WATER_TILE,
-                ResourcesManager.SPACE_SHIP_3,
-                3,
-                25);
     }
     
     @FXML
@@ -84,8 +71,8 @@ public class LevelChooser{
         
     }
     
-    @FXML
     public void stop() {
+        this.soundManager.shutdown();
         this.gameWorld.shutdown();
     }
     
@@ -94,7 +81,7 @@ public class LevelChooser{
         this.gameWorld = new GameWorld(
                 ResourcesManager.FRAMES_PER_SECOND,
                 ResourcesManager.APPLICATION_TITLE,
-                this.levels[0], 
+                Level.LEVEL1, 
                 this.gameWorldEnd);
 
         this.gameWorldStart.run();
@@ -105,7 +92,7 @@ public class LevelChooser{
         this.gameWorld = new GameWorld(
                 ResourcesManager.FRAMES_PER_SECOND,
                 ResourcesManager.APPLICATION_TITLE,
-                this.levels[1], 
+                Level.LEVEL2, 
                 this.gameWorldEnd);
         this.gameWorldStart.run();
     }
@@ -115,7 +102,7 @@ public class LevelChooser{
         this.gameWorld = new GameWorld(
                 ResourcesManager.FRAMES_PER_SECOND,
                 ResourcesManager.APPLICATION_TITLE,
-                this.levels[2], 
+                Level.LEVEL3, 
                 this.gameWorldEnd);
         this.gameWorldStart.run();
     }

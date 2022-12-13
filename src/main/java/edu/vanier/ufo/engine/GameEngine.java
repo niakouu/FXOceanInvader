@@ -208,7 +208,7 @@ public abstract class GameEngine extends Pane{
         return this.sceneNodes;
     }
 
-    protected SoundManager getSoundManager() {
+    public SoundManager getSoundManager() {
         return this.soundManager;
     }
 

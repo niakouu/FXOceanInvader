@@ -18,7 +18,7 @@ public class ResourcesManager {
     private static final String FXML_FOLDER = "/fxml/";
     
     // Background fxml tiles
-    public static final String BLUE_WATER_TILE = IMAGES_FOLDER + "ocean_tile.gif";
+    public static final String GREEN_WATER_TILE = IMAGES_FOLDER + "ocean_tile.gif";
     public static final String RED_WATER_TILE = IMAGES_FOLDER + "ocean_tile_red.gif";
     public static final String PINK_WATER_TILE = IMAGES_FOLDER + "ocean_tile_pink.gif";
     
@@ -52,6 +52,10 @@ public class ResourcesManager {
     // Sound effect files
     public static final String SOUND_LASER = SOUNDS_FOLDER + "laser.wav";    
     public static final String SOUND_EXPLOSION = SOUNDS_FOLDER + "explosion.wav";
+    public static final String MUSIC_LEVEL1 = SOUNDS_FOLDER + "level_1.mp3";
+    public static final String MUSIC_LEVEL2 = SOUNDS_FOLDER + "level_2.wav";
+    public static final String MUSIC_LEVEL3 = SOUNDS_FOLDER + "level_3.mp3";
+    public static final String MUSIC_MENU = SOUNDS_FOLDER + "menu.mp3";
     
     // Hearts
     public enum LifesDisplay {
