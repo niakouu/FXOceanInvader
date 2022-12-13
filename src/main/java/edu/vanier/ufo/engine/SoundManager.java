@@ -16,8 +16,8 @@ import java.util.concurrent.Executors;
  */
 public class SoundManager {
 
-    ExecutorService soundPool = Executors.newFixedThreadPool(2);
-    Map<String, AudioClip> soundEffectsMap = new HashMap<>();
+    private final ExecutorService soundPool;
+    private final Map<String, AudioClip> soundEffectsMap;
 
     /**
      * Constructor to create a simple thread pool.
@@ -27,6 +27,7 @@ public class SoundManager {
      */
     public SoundManager(int numberOfThreads) {
         this.soundPool = Executors.newFixedThreadPool(numberOfThreads);
+        this.soundEffectsMap = new HashMap<>();
     }
 
     /**

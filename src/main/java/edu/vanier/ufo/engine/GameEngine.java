@@ -27,7 +27,7 @@ public abstract class GameEngine {
 
     private Scene gameSurface;
     
-    private Pane sceneNodes;
+    private final Pane sceneNodes;
     
     private static Timeline gameLoop;
     
@@ -56,6 +56,31 @@ public abstract class GameEngine {
         // create and set timeline for the game loop
         buildAndSetGameLoop();
     }
+    
+    /**
+     * Initialize the game world by update the JavaFX Stage.
+     *
+     * @param primaryStage The main window containing the JavaFX Scene.
+     */
+    public abstract void initialize(final Stage primaryStage);
+    
+    /**
+     * Updates the sprite object's information to position on the game surface.
+     *
+     * @param sprite - The sprite to update.
+     */
+    protected abstract void handleUpdate(Sprite sprite);
+    
+    /**
+     * When two objects collide this method can handle the passed in sprite
+     * objects. By default it returns false, meaning the objects do not collide.
+     *
+     * @param spriteA - called from checkCollision() method to be compared.
+     * @param spriteB - called from checkCollision() method to be compared.
+     * @return boolean True if the objects collided, otherwise false.
+     */
+    protected abstract boolean handleCollision(Sprite spriteA, Sprite spriteB);
+
 
     /**
      * Builds and sets the game loop ready to be started.
@@ -79,13 +104,6 @@ public abstract class GameEngine {
     }
 
     /**
-     * Initialize the game world by update the JavaFX Stage.
-     *
-     * @param primaryStage The main window containing the JavaFX Scene.
-     */
-    public abstract void initialize(final Stage primaryStage);
-
-    /**
      * Kicks off (plays) the Timeline objects containing one key frame that
      * simply runs indefinitely with each frame invoking a method to update
      * sprite objects, check for collisions, and cleanup sprite objects.
@@ -106,35 +124,17 @@ public abstract class GameEngine {
     }
 
     /**
-     * Updates the sprite object's information to position on the game surface.
-     *
-     * @param sprite - The sprite to update.
-     */
-    protected abstract void handleUpdate(Sprite sprite);
-    
-    /**
-     * When two objects collide this method can handle the passed in sprite
-     * objects. By default it returns false, meaning the objects do not collide.
-     *
-     * @param spriteA - called from checkCollision() method to be compared.
-     * @param spriteB - called from checkCollision() method to be compared.
-     * @return boolean True if the objects collided, otherwise false.
-     */
-    protected abstract boolean handleCollision(Sprite spriteA, Sprite spriteB);
-
-    /**
      * Checks each game sprite in the game world to determine a collision
      * occurred. The method will loop through each sprite and passing it to the
      * handleCollision() method. The derived class should override
      * handleCollision() method.
      */
     protected void checkCollisions() {
-        //FIXME: handle collision with the spaceship.
         // check other sprite's collisions
-        spriteManager.resetCollisionsToCheck();
+        spriteManager.getAllSprites();
         // check each sprite against other sprite objects.
-        for (Sprite spriteA : spriteManager.getCollisionsToCheck()) {
-            for (Sprite spriteB : spriteManager.getCollisionsToCheck()) {
+        for (Sprite spriteA : spriteManager.getAllSprites()) {
+            for (Sprite spriteB : spriteManager.getAllSprites()) {
                 if (handleCollision(spriteA, spriteB)) {
                     // The break statement means one object only hits another
                     // object as opposed to one hitting many objects

@@ -20,26 +20,25 @@ public class SpriteManager {
     /**
      * All the sprite objects currently in play
      */
-    private final static List<Sprite> sprites = new ArrayList<>();
-
-    /**
-     * A global single threaded list used to check collision against other
-     * sprite objects.
-     */
-    private final static List<Sprite> collisionList = new ArrayList<>();
+    private final List<Sprite> sprites;
 
     /**
      * A global single threaded set used to cleanup or remove sprite objects in
      * play.
      */
-    private final static Set<Sprite> spritesToBeRemoved = new HashSet<>();
+    private final Set<Sprite> spritesToBeRemoved;
+
+    public SpriteManager() {
+        this.sprites = new ArrayList<>();
+        this.spritesToBeRemoved = new HashSet<>();
+    }
 
     /**
      * Get the list of sprites.
      * @return a list of sprites.
      */
     public List<Sprite> getAllSprites() {
-        return SpriteManager.sprites;
+        return this.sprites;
     }
 
     /**
@@ -48,7 +47,7 @@ public class SpriteManager {
      * @param inSprites
      */
     public void addSprites(Sprite... inSprites) {        
-        SpriteManager.sprites.addAll(Arrays.asList(inSprites));
+        this.sprites.addAll(Arrays.asList(inSprites));
     }
 
     /**
@@ -57,16 +56,7 @@ public class SpriteManager {
      * @param inSprites
      */
     public void removeSprites(Sprite... inSprites) {
-        SpriteManager.sprites.removeAll(Arrays.asList(inSprites));
-    }
-
-    /**
-     * Returns a set of sprite objects to be removed from the GAME_ACTORS.
-     *
-     * @return CLEAN_UP_SPRITES
-     */
-    public Set<Sprite> getSpritesToBeRemoved() {
-        return SpriteManager.spritesToBeRemoved;
+        this.sprites.removeAll(Arrays.asList(inSprites));
     }
 
     /**
@@ -76,30 +66,10 @@ public class SpriteManager {
      */
     public void addSpritesToBeRemoved(Sprite... sprites) {
         if (sprites.length > 1) {
-            SpriteManager.spritesToBeRemoved.addAll(Arrays.asList(sprites));
+            this.spritesToBeRemoved.addAll(Arrays.asList(sprites));
         } else {
-            SpriteManager.spritesToBeRemoved.add(sprites[0]);
+            this.spritesToBeRemoved.add(sprites[0]);
         }
-    }
-
-    /**
-     * Returns a list of sprite objects to assist in collision checks. This is a
-     * temporary and is a copy of all current sprite objects (copy of
-     * GAME_ACTORS).
-     *
-     * @return CHECK_COLLISION_LIST
-     */
-    public List<Sprite> getCollisionsToCheck() {
-        return SpriteManager.collisionList;
-    }
-
-    /**
-     * Clears the list of sprite objects in the collision check collection
-     * (CHECK_COLLISION_LIST).
-     */
-    public void resetCollisionsToCheck() {
-        SpriteManager.collisionList.clear();
-        SpriteManager.collisionList.addAll(SpriteManager.sprites);
     }
 
     /**
@@ -110,9 +80,9 @@ public class SpriteManager {
     public void cleanupSprites() {
 
         // remove from actors list
-        SpriteManager.sprites.removeAll(SpriteManager.spritesToBeRemoved);
+        this.sprites.removeAll(this.spritesToBeRemoved);
 
         // reset the clean up sprites
-        SpriteManager.spritesToBeRemoved.clear();
+        this.spritesToBeRemoved.clear();
     }
 }
