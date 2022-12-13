@@ -10,11 +10,11 @@ package edu.vanier.ufo.ui.controller;
  */
 public class Level {
     
-    private final String backgroundTile;
+        private final String backgroundTile;
     private final String spaceShipPath;
     private final int levelId;
     private final int invadersNumber;
-    private double velocity;
+    private double velocityMultiplier;
     private String weapons[];
     private String sounds[];
 

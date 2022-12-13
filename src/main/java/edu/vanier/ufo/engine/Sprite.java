@@ -5,7 +5,6 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Shape;
 
 /**
  * A class used to represent a sprite of any type on the scene.  
@@ -52,14 +51,14 @@ public abstract class Sprite extends Group {
         this.vY += y;
     }
     
-    protected void setupImage() {
+    protected final void setupImage() {
         this.imageView.setCache(true);
         this.imageView.setCacheHint(CacheHint.SPEED);
         this.imageView.setManaged(false);
         this.imageView.setVisible(true);
     }
     
-    protected void setUpGrid() {
+    protected final void setUpGrid() {
         this.setTranslateX(350);
         this.setTranslateY(450);
         this.setCache(true);
@@ -119,11 +118,4 @@ public abstract class Sprite extends Group {
         this.vY = velocityY;
     }
     
-    public Shape getCollisionBounds() {
-        return this.collisionBond;
-    }
-
-    public void setCollisionBounds(Ellipse collisionBounds) {
-        this.collisionBond = collisionBounds;
-    }
 }

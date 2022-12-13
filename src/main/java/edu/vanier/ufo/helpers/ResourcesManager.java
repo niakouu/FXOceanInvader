@@ -86,11 +86,7 @@ public class ResourcesManager {
         MISSILE_THREE_COLOR
     };
     
-    public static final String[] weapons_2 = {
-        
-    };
-    
-    public static final String[] invaders = {			
+    public static final String[] INVADERS = {			
 	INVADER_DRAGONFISH,
         INVADER_HATCHEFISH,
         INVADER_JELLYFISH,

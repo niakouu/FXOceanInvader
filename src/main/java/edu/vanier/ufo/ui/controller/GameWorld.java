@@ -1,14 +1,10 @@
-package edu.vanier.ufo.ui;
+package edu.vanier.ufo.ui.controller;
 
-import edu.vanier.ufo.ui.controller.Level;
 import edu.vanier.ufo.ui.hud.HeadsUpDisplay;
 import edu.vanier.ufo.engine.*;
 import edu.vanier.ufo.game.*;
 import edu.vanier.ufo.helpers.ResourcesManager;
-import edu.vanier.ufo.ui.controller.SpaceInvadersAppController;
-import java.io.IOException;
 import javafx.scene.CacheHint;
-import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -18,7 +14,6 @@ import javafx.animation.FadeTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -29,7 +24,6 @@ import javafx.scene.layout.BackgroundImage;
 import static javafx.scene.layout.BackgroundPosition.CENTER;
 import static javafx.scene.layout.BackgroundRepeat.REPEAT;
 import static javafx.scene.layout.BackgroundSize.DEFAULT;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
@@ -54,9 +48,12 @@ public class GameWorld extends GameEngine {
     private boolean gameEnd;
     
     private double mousePositionX;
+    
     private double mousePositionY;
     
     private int atomDestroyed;
+    
+    private final Runnable applicationHandeler;
     
     // Key pressed
     private final BooleanProperty wPressed;
@@ -67,13 +64,14 @@ public class GameWorld extends GameEngine {
     // Animations
     private final AnimationTimer move;
     
-    public GameWorld(int fps, String title, Level level) {
+    public GameWorld(int fps, String title, Level level, Runnable applicationHandeler) {
         super(fps, title);
         this.level = level;
         this.mousePositionX = 0d;
         this.mousePositionY = 0d;
         this.atomDestroyed = 0;
         this.gameEnd = false;
+        this.applicationHandeler = applicationHandeler; 
         this.spaceShip = new Ship(this.level.getSpaceShipPath());
         this.hud = new HeadsUpDisplay(this.level.getLevelId());
         this.wPressed = new SimpleBooleanProperty();
@@ -113,13 +111,11 @@ public class GameWorld extends GameEngine {
         // Sets the window title
         primaryStage.setTitle(getWindowTitle());
         
-        // Create the scene
-        setGameSurface(new Scene(getSceneNodes(), 1000, 600));
-        
-        primaryStage.setScene(getGameSurface());
-
         // Setup Game input
         setupInput(primaryStage);
+            
+        this.setWidth(primaryStage.getScene().getWidth());
+        this.setHeight(primaryStage.getScene().getHeight());
         
         // Hud margin
         VBox margins = new VBox(this.hud);
@@ -137,6 +133,8 @@ public class GameWorld extends GameEngine {
         // load sound files
         getSoundManager().loadSoundEffects("laser", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER));
         getSoundManager().loadSoundEffects("explosion", getClass().getClassLoader().getResource(ResourcesManager.SOUND_EXPLOSION));
+    
+        primaryStage.getScene().setRoot(this.getSceneNodes());
     }
     
     
@@ -156,6 +154,7 @@ public class GameWorld extends GameEngine {
         if (sprite instanceof Missile missile) removeMissiles(missile);
         else if (sprite instanceof Ship) stopShipAtBounds();
         else bounceOffWalls(sprite);
+        
     }
     
     /**
@@ -244,10 +243,7 @@ public class GameWorld extends GameEngine {
         
         primaryStage.getScene().setOnMouseClicked((MouseEvent event) -> {
             if (this.gameEnd) {
-                this.shutdown();
-                try {
-                    goBackToMainMenu(primaryStage);
-                } catch (IOException ex) {}
+                this.applicationHandeler.run();
             }
         });
     }
@@ -260,10 +256,9 @@ public class GameWorld extends GameEngine {
      */
     private void generateManySpheres() {
         Random rnd = new Random();
-        Scene gameSurface = this.getGameSurface();
         for (int i = 0; i < this.level.getInvadersNumber(); i++) {
-            // Randomize the invaders images
-            String invaderPath = ResourcesManager.invaders[rnd.nextInt(ResourcesManager.invaders.length - 1)];
+            // Randomize the INVADERS images
+            String invaderPath = ResourcesManager.INVADERS[rnd.nextInt(ResourcesManager.INVADERS.length - 1)];
             
             Atom atom = new Atom(invaderPath);
             ImageView atomImage = atom.getImageViewNode();
@@ -273,15 +268,15 @@ public class GameWorld extends GameEngine {
             atom.setVelocityY((rnd.nextInt(2) + rnd.nextDouble()) * (rnd.nextBoolean() ? 1 : -1));
 
             // random x between 0 to width of scene
-            double newX = rnd.nextInt((int) gameSurface.getWidth() - 100);
+            double newX = rnd.nextInt((int) this.getWidth() - 100);
 
-            if (newX > (gameSurface.getWidth() - (rnd.nextInt(15) + 5 * 2))) {
-                newX = gameSurface.getWidth() - (rnd.nextInt(15) + 5 * 2);
+            if (newX > (this.getWidth() - (rnd.nextInt(15) + 5 * 2))) {
+                newX = this.getWidth() - (rnd.nextInt(15) + 5 * 2);
             }
 
-            double newY = rnd.nextInt((int) (gameSurface.getHeight() - 300));
-            if (newY > (gameSurface.getHeight() - (rnd.nextInt(15) + 5 * 2))) {
-                newY = gameSurface.getHeight() - (rnd.nextInt(15) + 5 * 2);
+            double newY = rnd.nextInt((int) (this.getHeight() - 300));
+            if (newY > (this.getHeight() - (rnd.nextInt(15) + 5 * 2))) {
+                newY = this.getHeight() - (rnd.nextInt(15) + 5 * 2);
             }
 
             atom.setTranslateX(newX);
@@ -308,13 +303,13 @@ public class GameWorld extends GameEngine {
     private void bounceOffWalls(Sprite sprite) {
         if (sprite != null) {
             // Get the group node's X and Y but use the ImageView to obtain the width.
-            if (sprite.getTranslateX() > (getGameSurface().getWidth() - sprite.getBoundsInParent().getWidth())
+            if (sprite.getTranslateX() > (this.getWidth() - sprite.getBoundsInParent().getWidth())
                     || sprite.getTranslateX() < 0) {
                 // bounce the opposite direction
                 sprite.setVelocityX(sprite.getVelocityX() * -1);
             }
             // Get the group node's X and Y but use the ImageView to obtain the height.
-            if (sprite.getTranslateY() > getGameSurface().getHeight() - sprite.getBoundsInParent().getHeight()
+            if (sprite.getTranslateY() > this.getHeight() - sprite.getBoundsInParent().getHeight()
                     || sprite.getTranslateY() < 0) {
                 sprite.setVelocityY(sprite.getVelocityY() * -1);
             }
@@ -328,7 +323,7 @@ public class GameWorld extends GameEngine {
      */
     private void removeMissiles(Missile missile) {
         if (missile != null) {
-            if (missile.getTranslateX() > (getGameSurface().getWidth()
+            if (missile.getTranslateX() > (this.getWidth()
                     - missile.getBoundsInParent().getWidth())
                     || missile.getTranslateX() < 0) {
 
@@ -336,7 +331,7 @@ public class GameWorld extends GameEngine {
                 getSceneNodes().getChildren().remove(missile);
             }
             
-            if (missile.getTranslateY() > getGameSurface().getHeight()
+            if (missile.getTranslateY() > this.getHeight()
                     - missile.getBoundsInParent().getHeight()
                     || missile.getTranslateY() < 0) {
 
@@ -348,14 +343,14 @@ public class GameWorld extends GameEngine {
     
     private void stopShipAtBounds() {
         if (this.spaceShip != null) {
-            if (this.spaceShip.getTranslateX() > (getGameSurface().getWidth()
+            if (this.spaceShip.getTranslateX() > (this.getWidth()
                     - this.spaceShip.getBoundsInParent().getWidth()))
                 this.dPressed.setValue(false);
             
             if (this.spaceShip.getTranslateX() < 0)
                 this.aPressed.setValue(false);
             
-            if (this.spaceShip.getTranslateY() > getGameSurface().getHeight()
+            if (this.spaceShip.getTranslateY() > this.getHeight()
                     - this.spaceShip.getBoundsInParent().getHeight())
                 this.sPressed.setValue(false);
             
@@ -407,30 +402,13 @@ public class GameWorld extends GameEngine {
         if (event.getCode() == KeyCode.D) dPressed.set(keyPressed);
     }
     
-    private void stopShip() {
-        this.wPressed.setValue(false);
-        this.aPressed.setValue(false);
-        this.sPressed.setValue(false);
-        this.dPressed.setValue(false);
-    }
-    
     private void endGameDisplay(String text) {
         this.gameEnd = true;
         Label win = new Label();
         win.setText(text);
-        win.setTranslateX(this.getGameSurface().getWidth()/2);
-        win.setTranslateY(this.getGameSurface().getHeight()/2);
+        win.setTranslateX(this.getWidth()/2);
+        win.setTranslateY(this.getHeight()/2);
         win.setFont(Font.font("Lucida Sans Unicode", 45));
         getSceneNodes().getChildren().add(win);
-    }
-    
-    private void goBackToMainMenu(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(ResourcesManager.FXML_MAIN_MENU));
-        loader.setController(new SpaceInvadersAppController(primaryStage));
-        BorderPane root = loader.load();
-        Scene scene = new Scene(root);
-        
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
 }

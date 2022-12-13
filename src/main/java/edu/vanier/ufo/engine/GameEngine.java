@@ -5,7 +5,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -23,9 +22,7 @@ import javafx.util.Duration;
  *
  * @author cdea
  */
-public abstract class GameEngine {
-
-    private Scene gameSurface;
+public abstract class GameEngine extends Pane{
     
     private final Pane sceneNodes;
     
@@ -198,26 +195,6 @@ public abstract class GameEngine {
      */
     public SpriteManager getSpriteManager() {
         return this.spriteManager;
-    }
-
-    /**
-     * Returns the JavaFX Scene. This is called the game surface to allow the
-     * developer to add JavaFX Node objects onto the Scene.
-     *
-     * @return Scene The JavaFX scene graph.
-     */
-    public Scene getGameSurface() {
-        return this.gameSurface;
-    }
-
-    /**
-     * Sets the JavaFX Scene. This is called the game surface to allow the
-     * developer to add JavaFX Node objects onto the Scene.
-     *
-     * @param gameSurface The main game surface (JavaFX Scene).
-     */
-    protected void setGameSurface(Scene gameSurface) {
-        this.gameSurface = gameSurface;
     }
 
     /**

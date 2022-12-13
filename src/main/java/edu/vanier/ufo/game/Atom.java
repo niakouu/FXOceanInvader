@@ -3,6 +3,7 @@ package edu.vanier.ufo.game;
 import edu.vanier.ufo.engine.Sprite;
 import javafx.scene.effect.Reflection;
 import javafx.scene.image.ImageView;
+
 /**
  * A spherical looking object (Atom) with a random radius, color, and velocity.
  * When two atoms collide each will fade and become removed from the scene. The
@@ -11,6 +12,7 @@ import javafx.scene.image.ImageView;
  * @author cdea
  */
 public class Atom extends Sprite {
+    
     /**
      * Constructor will create a optionally create a gradient fill circle shape.
      * This sprite will contain a JavaFX Circle node.
@@ -34,7 +36,7 @@ public class Atom extends Sprite {
         this.setTranslateY(this.getTranslateY() + this.vY);
         
         if (!(this instanceof Missile))
-            this.setScaleX(this.vX < 0 ? -1 : 1);
+            this.setScaleX(this.vX < 0 ? 1 : -1);
     }
 
     /**
