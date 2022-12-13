@@ -5,11 +5,7 @@ import edu.vanier.ufo.engine.Sprite;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
-import javafx.scene.CacheHint;
-import javafx.scene.Group;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 /**
@@ -29,32 +25,21 @@ public class Ship extends Sprite {
     
     private boolean outOfBoundHeight;
     
-    private final Circle shield;
-
-    private final Circle hitBounds;
-    
-    private final Group flipBook;
-    
     private final FadeTransition shieldFade;
     
     private int rocketNameIterationCounter;
     
     private String rocketName;
 
-    public Ship() {
-        loadImage();
+    public Ship(String imagePath) {
+        super(imagePath);
         
         this.rocketNameIterationCounter = 0;
         this.rocketName = ResourcesManager.weapons[rocketNameIterationCounter];
         
-        this.flipBook = getFlipBook();
-        setNode(this.flipBook);
-        
-        //this.stopArea = getStopArea();
-        this.hitBounds = getHitBounds();
-        this.shield = getShield();
         this.shieldFade = getShieldFadeTransition();
-        this.flipBook.getChildren().add(this.hitBounds);
+        
+        setUpShield();
     }
 
     /**
@@ -62,8 +47,8 @@ public class Ship extends Sprite {
      */
     @Override
     public void update() {
-        this.flipBook.setTranslateX(this.flipBook.getTranslateX() + this.vX);
-        this.flipBook.setTranslateY(this.flipBook.getTranslateY() + vY);
+        this.setTranslateX(this.getTranslateX() + this.vX);
+        this.setTranslateY(this.getTranslateY() + this.vY);
     }
     
     /**
@@ -93,9 +78,9 @@ public class Ship extends Sprite {
     public Missile fire(double mousePositionX, double mousePositionY) {
         Missile fireMissile;
         
-        Point2D centerScene = this.getNode().localToScene(
-            this.hitBounds.getCenterX(),
-            this.hitBounds.getCenterY()
+        Point2D centerScene = this.localToScene(
+            this.collsionBond.getCenterX(),
+            this.collsionBond.getCenterY()
         );
         
         double angleShip = Math.atan2(mousePositionY - centerScene.getY(), mousePositionX - centerScene.getX());
@@ -108,25 +93,18 @@ public class Ship extends Sprite {
     }
 
     public void shieldToggle() {
-        double x = this.imageView.getBoundsInLocal().getWidth() / 2;
-        double y = this.imageView.getBoundsInLocal().getHeight() / 2;
-
-        this.shield.setCenterX(x);
-        this.shield.setCenterY(y);
-        setCollisionBounds(this.shield);
+        this.collsionBond.setOpacity(.7);
         
         this.shieldFade.playFromStart();
 
-        this.shieldOn = !shieldOn;
+        this.shieldOn = !this.shieldOn;
         
         if (this.shieldOn) {
-            setCollisionBounds(this.shield);
-            this.flipBook.getChildren().add(0, this.shield);
             this.shieldFade.playFromStart();
+            this.collsionBond.setOpacity(.7);
         } else {
-            this.flipBook.getChildren().remove(this.shield);
             this.shieldFade.stop();
-            setCollisionBounds(this.hitBounds);
+            this.collsionBond.setOpacity(0);
         }
     }
     
@@ -137,6 +115,10 @@ public class Ship extends Sprite {
             this.rocketNameIterationCounter = 0;
             this.rocketName = weapons[this.rocketNameIterationCounter];
         }
+    }
+    
+    public boolean getShieldOn() {
+        return this.shieldOn;
     }
     
     public void setOutOfBoundHeight(boolean outOfBound) {
@@ -154,69 +136,31 @@ public class Ship extends Sprite {
         shieldTransition.setDuration(Duration.millis(1000));
         shieldTransition.setCycleCount(12);
         shieldTransition.setAutoReverse(true);
-        shieldTransition.setNode(this.shield);
+        shieldTransition.setNode(this.collsionBond);
         shieldTransition.setOnFinished((ActionEvent actionEvent) -> {
             this.shieldOn = false;
-            this.flipBook.getChildren().remove(this.shield);
+            this.collsionBond.setOpacity(0);
             shieldTransition.stop();
-            setCollisionBounds(this.hitBounds);
         });
         return shieldTransition;
     }
     
-    private Circle getShield() {
-        Circle newShield = new Circle();
-        newShield.setRadius(60);
-        newShield.setStrokeWidth(5);
-        newShield.setStroke(Color.LIMEGREEN);
-        newShield.setOpacity(.70);
-        return newShield;
-    }
-    
-    private Group getFlipBook() {
-        Group group = new Group();
-        group.getChildren().add(this.imageView);
-        group.setTranslateX(350);
-        group.setTranslateY(450);
-        group.setCache(true);
-        group.setCacheHint(CacheHint.SPEED);
-        group.setManaged(false);
-        group.setAutoSizeChildren(false);
-        return group;
-    }
-    
-    private void loadImage() {
-        setImage(new Image(ResourcesManager.SPACE_SHIP_1, false));
-        this.imageView.setCache(true);
-        this.imageView.setCacheHint(CacheHint.SPEED);
-        this.imageView.setManaged(false);
-        this.imageView.setVisible(true);
-    }
-    
-    private Circle getHitBounds() {
-        Circle hitbound = new Circle();
-        double imageHeight = this.imageView.getImage().getHeight();
-        double imageWidth = this.imageView.getImage().getWidth();
-        hitbound.setStroke(Color.PINK);
-        hitbound.setFill(Color.RED);
-        hitbound.setRadius(imageHeight > imageWidth ? imageHeight/2 : imageWidth/2);
-        hitbound.setOpacity(0);
-        hitbound.setCenterX(imageHeight/2);
-        hitbound.setCenterY(imageWidth/2);
-        setCollisionBounds(this.hitBounds);
-        return hitbound;
-    }
-
     private Missile getMissle(String filepath, double angle) {
         Missile fireMissile = new Missile(filepath);
-        double offsetX = (this.imageView.getBoundsInLocal().getWidth() - fireMissile.getNode().getBoundsInLocal().getWidth()) / 2;
-        double offsetY = (this.imageView.getBoundsInLocal().getHeight() - fireMissile.getNode().getBoundsInLocal().getHeight()) / 2;
+        double offsetX = (this.imageView.getBoundsInLocal().getWidth() - fireMissile.getBoundsInLocal().getWidth()) / 2;
+        double offsetY = (this.imageView.getBoundsInLocal().getHeight() - fireMissile.getBoundsInLocal().getHeight()) / 2;
         
         fireMissile.setVelocityX(Math.cos(angle) * CONSTANT_VELOCITY);
         fireMissile.setVelocityY(Math.sin(angle) * CONSTANT_VELOCITY);
-        fireMissile.getNode().setTranslateX(getNode().getTranslateX() + (offsetX + fireMissile.getVelocityX()));
-        fireMissile.getNode().setTranslateY(getNode().getTranslateY() + (offsetY + fireMissile.getVelocityY()));
+        fireMissile.setTranslateX(getTranslateX() + (offsetX + fireMissile.getVelocityX()));
+        fireMissile.setTranslateY(getTranslateY() + (offsetY + fireMissile.getVelocityY()));
         
         return fireMissile;
+    }
+    
+    private void setUpShield() {
+        this.collsionBond.setStrokeWidth(5);
+        this.collsionBond.setStroke(Color.LIMEGREEN);
+        this.collsionBond.setFill(Color.GRAY);
     }
 }

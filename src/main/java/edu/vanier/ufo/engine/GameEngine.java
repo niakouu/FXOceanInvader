@@ -134,7 +134,7 @@ public abstract class GameEngine {
         spriteManager.resetCollisionsToCheck();
         // check each sprite against other sprite objects.
         for (Sprite spriteA : spriteManager.getCollisionsToCheck()) {
-            for (Sprite spriteB : spriteManager.getAllSprites()) {
+            for (Sprite spriteB : spriteManager.getCollisionsToCheck()) {
                 if (handleCollision(spriteA, spriteB)) {
                     // The break statement means one object only hits another
                     // object as opposed to one hitting many objects
@@ -229,17 +229,6 @@ public abstract class GameEngine {
      */
     public Pane getSceneNodes() {
         return this.sceneNodes;
-    }
-
-    /**
-     * Sets the JavaFX Group that will hold all JavaFX nodes which are rendered
-     * onto the game surface(Scene) is a JavaFX Group object.
-     *
-     * @param sceneNodes The root container having many children nodes to be
-     * displayed into the Scene area.
-     */
-    protected void setSceneNodes(Pane sceneNodes) {
-        this.sceneNodes = sceneNodes;
     }
 
     protected SoundManager getSoundManager() {

@@ -5,7 +5,6 @@ import edu.vanier.ufo.engine.*;
 import edu.vanier.ufo.game.*;
 import edu.vanier.ufo.helpers.ResourcesManager;
 import javafx.scene.CacheHint;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -17,7 +16,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -26,7 +24,6 @@ import javafx.scene.layout.BackgroundImage;
 import static javafx.scene.layout.BackgroundPosition.CENTER;
 import static javafx.scene.layout.BackgroundRepeat.REPEAT;
 import static javafx.scene.layout.BackgroundSize.DEFAULT;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -69,7 +66,7 @@ public class GameWorld extends GameEngine {
         this.mousePositionY = 0d;
         this.gameEnd = false;
         this.levels = new Level[LEVELS_NUMBER];
-        this.spaceShip = new Ship();
+        this.spaceShip = new Ship(ResourcesManager.SPACE_SHIP_2);
         this.hud = new HeadsUpDisplay();
         this.wPressed = new SimpleBooleanProperty();
         this.aPressed = new SimpleBooleanProperty();
@@ -93,17 +90,24 @@ public class GameWorld extends GameEngine {
     public void initialize(final Stage primaryStage) {
         this.move.start();
         
-        getSceneNodes().setBackground(new Background(new BackgroundImage(new Image(ResourcesManager.OCEAN_WATER), REPEAT, REPEAT, CENTER, DEFAULT)));
+        
+        getSceneNodes().setBackground(
+            new Background(
+                new BackgroundImage(
+                    new Image(ResourcesManager.RED_WATER_TILE),
+                    REPEAT,
+                    REPEAT,
+                    CENTER,
+                    DEFAULT
+                )
+            )
+        );
         
         // Sets the window title
         primaryStage.setTitle(getWindowTitle());
         
         // Create the scene
         setGameSurface(new Scene(getSceneNodes(), 1000, 600));
-        
-        // Change the background of the main scene.
-        //Image background = new Image(ResourcesManager.OCEAN_WATER);
-        //getGameSurface().setFill(new ImagePattern(background, 0, 14, background.getWidth(), background.getHeight(), false));
         
         primaryStage.setScene(getGameSurface());
 
@@ -119,7 +123,7 @@ public class GameWorld extends GameEngine {
         
         getSpriteManager().addSprites(this.spaceShip);
         getSceneNodes().getChildren().add(0, margins);
-        getSceneNodes().getChildren().add(1, this.spaceShip.getNode());
+        getSceneNodes().getChildren().add(1, this.spaceShip);
         
         // load sound files
         getSoundManager().loadSoundEffects("laser", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER));
@@ -160,7 +164,7 @@ public class GameWorld extends GameEngine {
             return false;
         
         // Atom hits Ship -> loss of heart
-        if (spriteA instanceof Atom && !(spriteA instanceof Missile) && spriteB instanceof Ship && spriteA.collide(spriteB)) {
+        if (spriteA instanceof Atom && !(spriteA instanceof Missile) && spriteB instanceof Ship && spriteA.collide(spriteB) && !this.spaceShip.getShieldOn()) {
             handleDeath((Atom) spriteA);
             this.gameEnd = this.hud.updateLifesDisplay();
             if (this.gameEnd) {
@@ -200,7 +204,7 @@ public class GameWorld extends GameEngine {
                     getSpriteManager().addSprites(missile);
 
                     getSoundManager().playSound("laser");
-                    getSceneNodes().getChildren().add(0, missile.getNode());
+                    getSceneNodes().getChildren().add(0, missile);
                 }
 
                 // Change weapon
@@ -233,7 +237,10 @@ public class GameWorld extends GameEngine {
         Random rnd = new Random();
         Scene gameSurface = this.getGameSurface();
         for (int i = 0; i < numSpheres; i++) {
-            Atom atom = new Atom(ResourcesManager.INVADER_SHARK);
+            // Randomize the invaders images
+            String invaderPath = ResourcesManager.INVADERS[rnd.nextInt(ResourcesManager.INVADERS.length - 1)];
+            
+            Atom atom = new Atom(invaderPath);
             ImageView atomImage = atom.getImageViewNode();
             
             // Randomize the location of each newly generated atom.
@@ -252,10 +259,10 @@ public class GameWorld extends GameEngine {
                 newY = gameSurface.getHeight() - (rnd.nextInt(15) + 5 * 2);
             }
 
-            atomImage.setTranslateX(newX);
-            atomImage.setTranslateY(newY);
-            atomImage.setVisible(true);
-            atomImage.setId("invader");
+            atom.setTranslateX(newX);
+            atom.setTranslateY(newY);
+            atom.setVisible(true);
+            atom.setId("invader");
             atomImage.setCache(true);
             atomImage.setCacheHint(CacheHint.SPEED);
             atomImage.setManaged(false);
@@ -264,7 +271,7 @@ public class GameWorld extends GameEngine {
             getSpriteManager().addSprites(atom);
 
             // add sprite's 
-            getSceneNodes().getChildren().add(atom.getNode());
+            getSceneNodes().getChildren().add(atom);
         }
     }
 
@@ -274,17 +281,16 @@ public class GameWorld extends GameEngine {
      * @param sprite The sprite to update based on the wall boundaries.
      */
     private void bounceOffWalls(Sprite sprite) {
-        Node displayNode;
-        if ((displayNode = sprite.getNode()) != null) {
+        if (sprite != null) {
             // Get the group node's X and Y but use the ImageView to obtain the width.
-            if (sprite.getNode().getTranslateX() > (getGameSurface().getWidth() - displayNode.getBoundsInParent().getWidth())
-                    || displayNode.getTranslateX() < 0) {
+            if (sprite.getTranslateX() > (getGameSurface().getWidth() - sprite.getBoundsInParent().getWidth())
+                    || sprite.getTranslateX() < 0) {
                 // bounce the opposite direction
                 sprite.setVelocityX(sprite.getVelocityX() * -1);
             }
             // Get the group node's X and Y but use the ImageView to obtain the height.
-            if (sprite.getNode().getTranslateY() > getGameSurface().getHeight() - displayNode.getBoundsInParent().getHeight()
-                    || sprite.getNode().getTranslateY() < 0) {
+            if (sprite.getTranslateY() > getGameSurface().getHeight() - sprite.getBoundsInParent().getHeight()
+                    || sprite.getTranslateY() < 0) {
                 sprite.setVelocityY(sprite.getVelocityY() * -1);
             }
         }
@@ -296,41 +302,39 @@ public class GameWorld extends GameEngine {
      * @param missile The missile to remove based on the wall boundaries.
      */
     private void removeMissiles(Missile missile) {
-        Node missileNode;
-        if ((missileNode = missile.getNode()) != null) {
-            if (missileNode.getTranslateX() > (getGameSurface().getWidth()
-                    - missileNode.getBoundsInParent().getWidth())
-                    || missileNode.getTranslateX() < 0) {
+        if (missile != null) {
+            if (missile.getTranslateX() > (getGameSurface().getWidth()
+                    - missile.getBoundsInParent().getWidth())
+                    || missile.getTranslateX() < 0) {
 
                 getSpriteManager().addSpritesToBeRemoved(missile);
-                getSceneNodes().getChildren().remove(missileNode);
+                getSceneNodes().getChildren().remove(missile);
             }
             
-            if (missileNode.getTranslateY() > getGameSurface().getHeight()
-                    - missileNode.getBoundsInParent().getHeight()
-                    || missileNode.getTranslateY() < 0) {
+            if (missile.getTranslateY() > getGameSurface().getHeight()
+                    - missile.getBoundsInParent().getHeight()
+                    || missile.getTranslateY() < 0) {
 
                 getSpriteManager().addSpritesToBeRemoved(missile);
-                getSceneNodes().getChildren().remove(missileNode);
+                getSceneNodes().getChildren().remove(missile);
             }
         }
     }
     
     private void stopShipAtBounds() {
-        Node shipNode;
-        if ((shipNode = this.spaceShip.getNode()) != null) {
-            if (shipNode.getTranslateX() > (getGameSurface().getWidth()
-                    - shipNode.getBoundsInParent().getWidth()))
+        if (this.spaceShip != null) {
+            if (this.spaceShip.getTranslateX() > (getGameSurface().getWidth()
+                    - this.spaceShip.getBoundsInParent().getWidth()))
                 this.dPressed.setValue(false);
             
-            if (shipNode.getTranslateX() < 0)
+            if (this.spaceShip.getTranslateX() < 0)
                 this.aPressed.setValue(false);
             
-            if (shipNode.getTranslateY() > getGameSurface().getHeight()
-                    - shipNode.getBoundsInParent().getHeight())
+            if (this.spaceShip.getTranslateY() > getGameSurface().getHeight()
+                    - this.spaceShip.getBoundsInParent().getHeight())
                 this.sPressed.setValue(false);
             
-            if (shipNode.getTranslateY() < 0)
+            if (this.spaceShip.getTranslateY() < 0)
                 this.wPressed.setValue(false);
         }
     }
@@ -348,22 +352,21 @@ public class GameWorld extends GameEngine {
     private void implode(Atom atom) {
         atom.setVelocityX(0);
         atom.setVelocityY(0);
-        Node currentNode = atom.getNode();
         
         Sprite explosion = new Atom(ResourcesManager.EXPLOSION);
         if (!(atom instanceof Missile)) {
-            explosion.getNode().setTranslateX(atom.getNode().getTranslateX());
-            explosion.getNode().setTranslateY(atom.getNode().getTranslateY() - atom.getImage().getHeight());
-            getSceneNodes().getChildren().add(explosion.getNode());
+            explosion.setTranslateX(atom.getTranslateX());
+            explosion.setTranslateY(atom.getTranslateY() - atom.getImage().getHeight());
+            getSceneNodes().getChildren().add(explosion);
         }
         
-        FadeTransition ft = new FadeTransition(Duration.millis(700), currentNode);
+        FadeTransition ft = new FadeTransition(Duration.millis(700), atom);
         ft.setFromValue(35);
         ft.setToValue(0);
         ft.setOnFinished((ActionEvent event) -> {
             atom.isDead = true;
-            getSceneNodes().getChildren().remove(currentNode);
-            getSceneNodes().getChildren().remove(explosion.getNode());
+            getSceneNodes().getChildren().remove(atom);
+            getSceneNodes().getChildren().remove(explosion);
         });
         ft.play();
     }

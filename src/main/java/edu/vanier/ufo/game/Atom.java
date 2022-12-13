@@ -1,7 +1,7 @@
 package edu.vanier.ufo.game;
 
 import edu.vanier.ufo.engine.Sprite;
-import javafx.scene.image.Image;
+import javafx.scene.effect.Reflection;
 import javafx.scene.image.ImageView;
 /**
  * A spherical looking object (Atom) with a random radius, color, and velocity.
@@ -11,7 +11,6 @@ import javafx.scene.image.ImageView;
  * @author cdea
  */
 public class Atom extends Sprite {
-
     /**
      * Constructor will create a optionally create a gradient fill circle shape.
      * This sprite will contain a JavaFX Circle node.
@@ -19,13 +18,11 @@ public class Atom extends Sprite {
      * @param imagePath the path of the image to be embedded in the node object.
      */
     public Atom(String imagePath) {
-        ImageView newAtom = new ImageView();
-        Image shipImage = new Image(imagePath, true); 
-        newAtom.setImage(shipImage);
-        this.setImage(shipImage);
+        super(imagePath);
+        Reflection reflection = new Reflection();
+        reflection.setFraction(0.7);
         
-        this.node = newAtom;
-        this.collidingNode = newAtom;
+        this.imageView.setEffect(reflection);
     }
 
     /**
@@ -33,10 +30,10 @@ public class Atom extends Sprite {
      */
     @Override
     public void update() {
-        getNode().setTranslateX(getNode().getTranslateX() + this.vX);
-        getNode().setTranslateY(getNode().getTranslateY() + this.vY);
+        this.setTranslateX(this.getTranslateX() + this.vX);
+        this.setTranslateY(this.getTranslateY() + this.vY);
         
-        this.getNode().setScaleX(this.vX < 0 ? -1 : 1);
+        //this.setScaleX(this.vX < 0 ? -1 : 1);
     }
 
     /**
@@ -45,7 +42,7 @@ public class Atom extends Sprite {
      * @return Circle shape representing JavaFX node for convenience.
      */
     public ImageView getImageViewNode() {
-        return (ImageView) getNode();
+        return this.imageView;
     }  
     
 }

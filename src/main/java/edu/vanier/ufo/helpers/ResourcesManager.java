@@ -16,10 +16,9 @@ public class ResourcesManager {
     private static final String SOUNDS_FOLDER = RESOURCES_FOLDER + "sounds/";
     
     // Background fxml tiles
-    public static final String COLD_WATER = IMAGES_FOLDER + "coldwater.gif";
-    public static final String COLD_WATER_DEEP = IMAGES_FOLDER + "coldwaterdeepwater.gif";
-    public static final String COLD_WATER_ICE = IMAGES_FOLDER + "coldwaterice.gif";
-    public static final String OCEAN_WATER = IMAGES_FOLDER + "ocean_tile.gif";
+    public static final String BLUE_WATER_TILE = IMAGES_FOLDER + "ocean_tile_blue.gif";
+    public static final String RED_WATER_TILE = IMAGES_FOLDER + "ocean_tile_red.gif";
+    public static final String PINK_WATER_TILE = IMAGES_FOLDER + "ocean_tile_pink.gif";
     
     // Ship images
     public static final String SPACE_SHIP_1 = IMAGES_FOLDER + "ship_level1.png";
@@ -35,11 +34,12 @@ public class ResourcesManager {
 
     // Invader sprites.
     public static final String INVADER_DRAGONFISH = IMAGES_FOLDER + "invader_dragonfish.gif";
-    public static final String INVADER_HATCHEFISH = IMAGES_FOLDER + "invader_hatchefish.gif";
+    public static final String INVADER_HATCHEFISH = IMAGES_FOLDER + "invader_hatchetfish.gif";
     public static final String INVADER_JELLYFISH = IMAGES_FOLDER + "invader_jellyfish.gif";
     public static final String INVADER_SHARK = IMAGES_FOLDER + "invader_shark.png";
     public static final String INVADER_SHARK_MOVING = IMAGES_FOLDER + "invader_shark_moving.gif";
-    public static final String INVADER_VAPERFISH = IMAGES_FOLDER + "invader_vaperfish.png";
+    public static final String INVADER_VAPERFISH = IMAGES_FOLDER + "invader_vaperfish.gif";
+    public static final String INVADER_MONSTER_SEA_HORSE = IMAGES_FOLDER + "monster_seahorse.gif";
 
     // Sound effect files
     public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";    
@@ -84,7 +84,8 @@ public class ResourcesManager {
         INVADER_JELLYFISH,
         INVADER_SHARK,
         INVADER_SHARK_MOVING,
-        INVADER_VAPERFISH
+        INVADER_VAPERFISH, 
+        INVADER_MONSTER_SEA_HORSE
     };
     
 }
