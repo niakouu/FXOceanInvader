@@ -88,20 +88,7 @@ public class GameWorld extends GameEngine {
             }
         };
     }
-
-    public GameWorld(int fps) {
-        super(fps, null);
-        this.spaceShip = null;
-        this.hud = null;
-        this.level = null;
-        this.applicationHandeler = null;
-        this.wPressed = null;
-        this.aPressed = null;
-        this.sPressed = null;
-        this.dPressed = null;
-        this.move = null;
-    }
-
+    
     /**
      * Initialize the game world by adding sprite objects.
      *
@@ -111,6 +98,7 @@ public class GameWorld extends GameEngine {
     public void initialize(final Stage primaryStage) {
         this.move.start();
         
+        // Set a background based on a tile gif.
         getSceneNodes().setBackground(
             new Background(
                 new BackgroundImage(
@@ -150,7 +138,10 @@ public class GameWorld extends GameEngine {
         getSoundManager().loadSoundEffects("explosion", getClass().getClassLoader().getResource(ResourcesManager.SOUND_EXPLOSION));
         getSoundManager().loadSoundEffects("music", getClass().getClassLoader().getResource(this.level.getBackgroundSound()));
         
+        // Start the music
         getSoundManager().playSound("music");
+        
+        // Add the nodes to the scene
         primaryStage.getScene().setRoot(this.getSceneNodes());
     }
     
@@ -162,14 +153,22 @@ public class GameWorld extends GameEngine {
      */
     @Override
     protected void handleUpdate(Sprite sprite) {
-        // advance object
+        // All atomes are dead.
         if (this.atomDestroyed == this.level.getInvadersNumber()) {
             endGameDisplay("YOU WIN, click to start again.");
             return;
         }
+        
+        //  Update the sprite as long as the game didn't end
         if (!gameEnd) sprite.update();
+        
+        // Remove the missile getting out of bond.
         if (sprite instanceof Missile missile) removeMissiles(missile);
+        
+        // Don't let the ship to get out of bond.
         else if (sprite instanceof Ship) stopShipAtBounds();
+        
+        // Let the atom bonce. 
         else bounceOffWalls(sprite);
         
     }
@@ -198,6 +197,8 @@ public class GameWorld extends GameEngine {
             getSoundManager().playSound("explosion");
             this.gameEnd = this.hud.updateLifesDisplay();
             this.atomDestroyed++;
+            
+            // No hearts = end game
             if (this.gameEnd) {
                 endGameDisplay("GAME OVER~, click to start again.");
             }
@@ -206,9 +207,15 @@ public class GameWorld extends GameEngine {
         // Missile hitting sprite
         if (spriteA instanceof Missile && spriteA.collide(spriteB) && spriteB instanceof Atom) {
             if (!spriteB.isDead) {
+                
+                // Delete both atom
                 handleDeath((Atom)spriteB);
                 handleDeath((Atom)spriteA);
+                
+                // Play the sound when colliding 
                 getSoundManager().playSound("explosion");
+                
+                // Score update on the heads up display
                 this.hud.updateScore();
                 this.atomDestroyed++;
             }
@@ -243,11 +250,13 @@ public class GameWorld extends GameEngine {
                 // Fire
                 if (event.getCode() == KeyCode.SPACE) {
                     
+                    // Get the missiles + add them to sprites
                     Missile[] missiles = this.spaceShip.fire(this.mousePositionX, this.mousePositionY, this.level.getLevelId());
                     getSpriteManager().addSprites(missiles);
 
                     getSoundManager().playSound("laser");
                     
+                    // Add them to the scene nodes
                     for (Missile missile : missiles) {
                         getSceneNodes().getChildren().add(0, missile);
                     }
@@ -304,7 +313,8 @@ public class GameWorld extends GameEngine {
             if (newY > (this.getHeight() - (rnd.nextInt(15) + 5 * 2))) {
                 newY = this.getHeight() - (rnd.nextInt(15) + 5 * 2);
             }
-
+            
+            // Set the image and node layout
             atom.setTranslateX(newX);
             atom.setTranslateY(newY);
             atom.setVisible(true);
@@ -400,6 +410,7 @@ public class GameWorld extends GameEngine {
         atom.setVelocityY(0);
         atom.isDead = true;
         
+        // Add explosion
         Sprite explosion = new Atom(ResourcesManager.EXPLOSION);
         if (!(atom instanceof Missile)) {
             explosion.setTranslateX(atom.getTranslateX());
@@ -407,6 +418,7 @@ public class GameWorld extends GameEngine {
             getSceneNodes().getChildren().add(explosion);
         }
         
+        // Set the transiiton 
         FadeTransition ft = new FadeTransition(Duration.millis(700), atom);
         ft.setFromValue(35);
         ft.setToValue(0);
@@ -431,13 +443,14 @@ public class GameWorld extends GameEngine {
     private void endGameDisplay(String text) {
         this.gameEnd = true;
         
+        // Add text
         Text end = new Text(text);
         end.setTranslateX(this.getWidth()/2 - 200);
         end.setTranslateY(this.getHeight()/2);
         end.setFont(Font.font("Lucida Sans Unicode", 45));
-        
         end.setFill(Color.WHITE);
         
+        // Add to the scene nodes
         getSceneNodes().getChildren().add(end);
     }
 }

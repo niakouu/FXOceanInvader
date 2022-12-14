@@ -11,7 +11,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.util.Duration;
 
 /**
- * A spaceship with 32 directions When two atoms collide each will fade and
+ * When two atoms collide each will fade and
  * become removed from the scene. The method called implode() implements a fade
  * transition effect.
  *
@@ -37,7 +37,7 @@ public class Ship extends Sprite {
         super(imagePath);
         
         this.rocketNameIterationCounter = missileId;
-        this.rocketName = ResourcesManager.WEAPONS_1[rocketNameIterationCounter];
+        this.rocketName = ResourcesManager.WEAPONS[rocketNameIterationCounter];
         
         this.shieldFade = getShieldFadeTransition();
         
@@ -54,7 +54,7 @@ public class Ship extends Sprite {
     }
     
     /**
-     * Update the velocity of atom particles.
+     * Update the velocity of atom particles = update the movements.
      * 
      * @param wPressed
      * @param aPressed
@@ -76,7 +76,16 @@ public class Ship extends Sprite {
 
         this.imageView.rotateProperty().setValue(Math.toDegrees(angle));
     }
-  
+    
+    /**
+     * Fire missile based on the angle. Return an array of multiple missiles,
+     * based on the level.
+     * 
+     * @param mousePositionX
+     * @param mousePositionY
+     * @param size
+     * @return 
+     */
     public Missile[] fire(double mousePositionX, double mousePositionY, int size) {
         Missile[] missiles = new Missile[size];
         
@@ -86,19 +95,24 @@ public class Ship extends Sprite {
             this.collisionBond.getCenterY()
         );
         
+        // Find angle
         double angleShip = Math.atan2(mousePositionY - centerScene.getY(), mousePositionX - centerScene.getX());
         this.imageView.rotateProperty().setValue(Math.toDegrees(angleShip));
         
+        // Turn image
         fireMissile = getMissle(this.rocketName, angleShip);
         fireMissile.getImageViewNode().rotateProperty().setValue(Math.toDegrees(angleShip) + 90);
         
         missiles[0] = fireMissile;
         
+        // Second missile
         if (size > 1) {
             fireMissile = getMissle(this.rocketName, angleShip + 0.1);
             fireMissile.getImageViewNode().rotateProperty().setValue(Math.toDegrees(angleShip + 0.1) + 90);
             missiles[1] = fireMissile;
         }
+        
+        // Third missile
         if (size > 2) {
             fireMissile = getMissle(this.rocketName, angleShip - 0.1);
             fireMissile.getImageViewNode().rotateProperty().setValue(Math.toDegrees(angleShip - 0.1) + 90);
@@ -108,6 +122,9 @@ public class Ship extends Sprite {
         return missiles;
     }
 
+    /**
+     * Play with the coolisionBond as a shield. 
+     */
     public void shieldToggle() {
         this.collisionBond.setOpacity(.7);
         
@@ -124,8 +141,11 @@ public class Ship extends Sprite {
         }
     }
     
+    /**
+     * Go trough all the Weapons in the ArrayList to change the weapon.
+     */
     public void changeWeapon() {
-        String[] weapons = ResourcesManager.WEAPONS_1;
+        String[] weapons = ResourcesManager.WEAPONS;
         if(++this.rocketNameIterationCounter < weapons.length) this.rocketName = weapons[this.rocketNameIterationCounter];
         else {
             this.rocketNameIterationCounter = 0;
@@ -174,6 +194,9 @@ public class Ship extends Sprite {
         return fireMissile;
     }
     
+    /**
+     * Customization of the ship's shield.
+     */
     private void setUpShield() {
         this.collisionBond.setStrokeWidth(5);
         this.collisionBond.setStroke(Color.LIMEGREEN);

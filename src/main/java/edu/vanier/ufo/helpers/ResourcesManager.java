@@ -86,7 +86,7 @@ public class ResourcesManager {
         };
     }
     
-    public static final String[] WEAPONS_1 =  {
+    public static final String[] WEAPONS =  {
         MISSILE_RED,
         MISSILE_THREE_COLOR,
         ROCKET

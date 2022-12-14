@@ -21,11 +21,17 @@ public class ScoreDisplay extends VBox{
 
     public ScoreDisplay() {
         this.scoreLabel = new Label();
+        this.score = 0;
+        
+        // Set up the scoreLabel 
         this.scoreLabel.setTextFill(Color.WHITE);
         this.scoreLabel.setMaxSize(USE_PREF_SIZE, USE_PREF_SIZE);
-        this.score = -1;
+        this.scoreLabel.setText("Score: " + this.score);
+        
+        
         this.setAlignment(Pos.CENTER);
-        updateScore();
+        
+        // Add to the scoreLabel to the VBox. 
         this.getChildren().add(this.scoreLabel);
     }
     

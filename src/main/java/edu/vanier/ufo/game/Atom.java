@@ -21,6 +21,8 @@ public class Atom extends Sprite {
      */
     public Atom(String imagePath) {
         super(imagePath);
+        
+        // --> Adding refelction to the imageview of the atom
         Reflection reflection = new Reflection();
         reflection.setFraction(0.7);
         

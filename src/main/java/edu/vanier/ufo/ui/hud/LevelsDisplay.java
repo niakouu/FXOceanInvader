@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 /**
- *
+ * The levels display of my app
  * @author edeli
  */
 public class LevelsDisplay extends VBox{

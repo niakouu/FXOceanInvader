@@ -36,29 +36,35 @@ public class LevelChooser{
     private GameWorld gameWorld;
 
     public LevelChooser(Stage primaryStage) throws IOException {
-        this.gameWorld = new GameWorld(ResourcesManager.FRAMES_PER_SECOND);
+        this.gameWorld = null;
         this.mainMenu = new Scene(new Group(), 1000, 600);
         
+        // Load FXML file
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ResourcesManager.FXML_MAIN_MENU));
         loader.setController(this);
         this.mainMenu.setRoot((Pane) loader.load()); 
+        
+        // The mainMenu nodes set to a variable
         this.initialMenuRoot = this.mainMenu.getRoot();
         
+        // Sound Manager to play sound
         this.soundManager = new SoundManager(1);
-        
         this.soundManager.loadSoundEffects("menu", getClass().getClassLoader().getResource(ResourcesManager.MUSIC_MENU));
         this.soundManager.playSound("menu");
         
+        // Stage setting
         primaryStage.setScene(this.mainMenu);
         primaryStage.setFullScreen(true);
         primaryStage.show();
         
+        // When the gameWorld starts
         this.gameWorldStart = () -> {
             this.soundManager.stopSound("menu");
             this.gameWorld.initialize(primaryStage);
             this.gameWorld.beginGameLoop();
         };
         
+        // When the gameWorld ends
         this.gameWorldEnd = () -> {
             this.gameWorld.shutdown();
             this.mainMenu.setRoot(this.initialMenuRoot);
@@ -71,6 +77,9 @@ public class LevelChooser{
         
     }
     
+    /**
+     * Shutdown the app
+     */
     public void stop() {
         this.soundManager.shutdown();
         this.gameWorld.shutdown();

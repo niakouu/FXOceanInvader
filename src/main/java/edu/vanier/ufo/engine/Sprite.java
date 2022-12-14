@@ -117,5 +117,4 @@ public abstract class Sprite extends Group {
     public void setVelocityY(double velocityY) {
         this.vY = velocityY;
     }
-    
 }

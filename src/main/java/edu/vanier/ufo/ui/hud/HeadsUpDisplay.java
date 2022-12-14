@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 /**
- *
+ *  The heads up display of my app, essentially a VBox. 
  * @author edeli
  */
 public class HeadsUpDisplay extends VBox{
@@ -21,13 +21,15 @@ public class HeadsUpDisplay extends VBox{
     
     private final LevelsDisplay levelDisplay;
     
-    private final LifesDisaplay lifesDisplay;
+    private final LivesDisaplay lifesDisplay;
     
     public HeadsUpDisplay(int level) {
         this.scoreDisplay = new ScoreDisplay();
         this.levelDisplay = new LevelsDisplay(level);
-        this.lifesDisplay = new LifesDisaplay();
+        this.lifesDisplay = new LivesDisaplay();
         this.getChildren().addAll(this.scoreDisplay, this.levelDisplay, this.lifesDisplay);
+        
+        // Set the HeadsUp preferences
         this.setPrefWidth(200d);
         this.setPadding(new Insets(40d));
         this.setOpacity(0.8);
@@ -44,6 +46,6 @@ public class HeadsUpDisplay extends VBox{
      * @return true if the games end or false if it continues
      */
     public boolean updateLifesDisplay() {
-        return this.lifesDisplay.updateLifesCount();
+        return this.lifesDisplay.updateLivesCount();
     }
 }

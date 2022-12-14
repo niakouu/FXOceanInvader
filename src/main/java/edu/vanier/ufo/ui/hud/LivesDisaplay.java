@@ -11,10 +11,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 /**
- *
+ * Lives displaying the images of hearts that changes based on the number of 
+ * times the ship was hit. 
  * @author edeli
  */
-public class LifesDisaplay extends HBox{
+public class LivesDisaplay extends HBox{
     
     private final static int LIFES_MAX = 3;
     
@@ -22,7 +23,7 @@ public class LifesDisaplay extends HBox{
     
     private int lifesCount;
     
-    public LifesDisaplay() {
+    public LivesDisaplay() {
         this.lifesCount = LIFES_MAX;
         this.heartsImage = new ImageView();
         this.setAlignment(Pos.CENTER);
@@ -30,12 +31,19 @@ public class LifesDisaplay extends HBox{
         this.getChildren().add(this.heartsImage);
     }
     
-    public boolean updateLifesCount() {
+    /**
+     * Update the 
+     * @return 
+     */
+    public boolean updateLivesCount() {
         this.lifesCount--;
         updateHeartsImage();
         return this.lifesCount < 1;
     }
     
+    /**
+     * Get the right image for the heart.
+     */
     private void updateHeartsImage() {
         switch (this.lifesCount) {
             case 3 -> this.heartsImage.setImage(new Image(ResourcesManager.LifesDisplay.THREE_LIFE_LEFT.toString()));

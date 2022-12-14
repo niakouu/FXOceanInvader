@@ -5,7 +5,7 @@
 package edu.vanier.ufo.helpers;
 
 /**
- *
+ *  All the levels implemented for my game.
  * @author edeli
  */
 public enum Level {
