@@ -14,6 +14,7 @@ public enum Level {
             ResourcesManager.SPACE_SHIP_1,
             1,
             7,
+            0,
             0.7,
             ResourcesManager.MUSIC_LEVEL1
     ),
@@ -23,6 +24,7 @@ public enum Level {
             2,
             15,
             1,
+            1.0,
             ResourcesManager.MUSIC_LEVEL2
             ),
     LEVEL3 (
@@ -30,6 +32,7 @@ public enum Level {
             ResourcesManager.SPACE_SHIP_3,
             3,
             25,
+            2,
             1.3,
             ResourcesManager.MUSIC_LEVEL3
             );
@@ -38,14 +41,16 @@ public enum Level {
     private final String shipImagePath;
     private final int levelId;
     private final int invadersNumber;
+    private final int missileId;
     private final double velocityMultiplier;
     private final String backgroundSound;
 
-    private Level(String backgroundTile, String spaceShipPath, int levelId, int invadersNumber, double velocityMultiplier, String backgroundSound) {
+    private Level(String backgroundTile, String spaceShipPath, int levelId, int invadersNumber, int missileId, double velocityMultiplier, String backgroundSound) {
         this.backgroundTile = backgroundTile;
         this.shipImagePath = spaceShipPath;
         this.levelId = levelId;
         this.invadersNumber = invadersNumber;
+        this.missileId = missileId;
         this.velocityMultiplier = velocityMultiplier;
         this.backgroundSound = backgroundSound;
     }
@@ -72,5 +77,9 @@ public enum Level {
 
     public String getBackgroundSound() {
         return this.backgroundSound;
+    }
+    
+    public int getMissileId() {
+        return this.missileId;
     }
 }

@@ -33,10 +33,10 @@ public class Ship extends Sprite {
     
     private String rocketName;
 
-    public Ship(String imagePath) {
+    public Ship(String imagePath, int missileId) {
         super(imagePath);
         
-        this.rocketNameIterationCounter = 0;
+        this.rocketNameIterationCounter = missileId;
         this.rocketName = ResourcesManager.WEAPONS_1[rocketNameIterationCounter];
         
         this.shieldFade = getShieldFadeTransition();
@@ -77,9 +77,10 @@ public class Ship extends Sprite {
         this.imageView.rotateProperty().setValue(Math.toDegrees(angle));
     }
   
-    public Missile fire(double mousePositionX, double mousePositionY) {
-        Missile fireMissile;
+    public Missile[] fire(double mousePositionX, double mousePositionY, int size) {
+        Missile[] missiles = new Missile[size];
         
+        Missile fireMissile;
         Point2D centerScene = this.localToScene(
             this.collisionBond.getCenterX(),
             this.collisionBond.getCenterY()
@@ -91,7 +92,20 @@ public class Ship extends Sprite {
         fireMissile = getMissle(this.rocketName, angleShip);
         fireMissile.getImageViewNode().rotateProperty().setValue(Math.toDegrees(angleShip) + 90);
         
-        return fireMissile;
+        missiles[0] = fireMissile;
+        
+        if (size > 1) {
+            fireMissile = getMissle(this.rocketName, angleShip + 0.1);
+            fireMissile.getImageViewNode().rotateProperty().setValue(Math.toDegrees(angleShip + 0.1) + 90);
+            missiles[1] = fireMissile;
+        }
+        if (size > 2) {
+            fireMissile = getMissle(this.rocketName, angleShip - 0.1);
+            fireMissile.getImageViewNode().rotateProperty().setValue(Math.toDegrees(angleShip - 0.1) + 90);
+            missiles[2] = fireMissile;
+        }
+        
+        return missiles;
     }
 
     public void shieldToggle() {

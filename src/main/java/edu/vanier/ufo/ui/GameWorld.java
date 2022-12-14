@@ -74,7 +74,7 @@ public class GameWorld extends GameEngine {
         this.atomDestroyed = 0;
         this.gameEnd = false;
         this.applicationHandeler = applicationHandeler; 
-        this.spaceShip = new Ship(this.level.getShipImagePath());
+        this.spaceShip = new Ship(this.level.getShipImagePath(), this.level.getMissileId());
         this.hud = new HeadsUpDisplay(this.level.getLevelId());
         this.wPressed = new SimpleBooleanProperty();
         this.aPressed = new SimpleBooleanProperty();
@@ -204,10 +204,10 @@ public class GameWorld extends GameEngine {
         }
         
         // Missile hitting sprite
-        if (spriteA instanceof Missile) {
-            if (spriteA.collide(spriteB) && spriteB instanceof Atom) {
-                handleDeath((Atom)spriteA);
+        if (spriteA instanceof Missile && spriteA.collide(spriteB) && spriteB instanceof Atom) {
+            if (!spriteB.isDead) {
                 handleDeath((Atom)spriteB);
+                handleDeath((Atom)spriteA);
                 getSoundManager().playSound("explosion");
                 this.hud.updateScore();
                 this.atomDestroyed++;
@@ -242,11 +242,15 @@ public class GameWorld extends GameEngine {
 
                 // Fire
                 if (event.getCode() == KeyCode.SPACE) {
-                    Missile missile = this.spaceShip.fire(this.mousePositionX, this.mousePositionY);
-                    getSpriteManager().addSprites(missile);
+                    
+                    Missile[] missiles = this.spaceShip.fire(this.mousePositionX, this.mousePositionY, this.level.getLevelId());
+                    getSpriteManager().addSprites(missiles);
 
                     getSoundManager().playSound("laser");
-                    getSceneNodes().getChildren().add(0, missile);
+                    
+                    for (Missile missile : missiles) {
+                        getSceneNodes().getChildren().add(0, missile);
+                    }
                 }
             }  
         });
@@ -286,8 +290,8 @@ public class GameWorld extends GameEngine {
             ImageView atomImage = atom.getImageViewNode();
             
             // Randomize the location of each newly generated atom.
-            atom.setVelocityX((rnd.nextInt(2) + rnd.nextDouble()) * (rnd.nextBoolean() ? 1 : -1));
-            atom.setVelocityY((rnd.nextInt(2) + rnd.nextDouble()) * (rnd.nextBoolean() ? 1 : -1));
+            atom.setVelocityX((rnd.nextInt(2) + rnd.nextDouble()) * (rnd.nextBoolean() ? 1 : -1) * this.level.getVelocityMultiplier());
+            atom.setVelocityY((rnd.nextInt(2) + rnd.nextDouble()) * (rnd.nextBoolean() ? 1 : -1) * this.level.getVelocityMultiplier());
 
             // random x between 0 to width of scene
             double newX = rnd.nextInt((int) this.getWidth() - 100);
@@ -394,6 +398,7 @@ public class GameWorld extends GameEngine {
     private void implode(Atom atom) {
         atom.setVelocityX(0);
         atom.setVelocityY(0);
+        atom.isDead = true;
         
         Sprite explosion = new Atom(ResourcesManager.EXPLOSION);
         if (!(atom instanceof Missile)) {
@@ -406,7 +411,6 @@ public class GameWorld extends GameEngine {
         ft.setFromValue(35);
         ft.setToValue(0);
         ft.setOnFinished((ActionEvent event) -> {
-            atom.isDead = true;
             getSceneNodes().getChildren().remove(atom);
             getSceneNodes().getChildren().remove(explosion);
         });

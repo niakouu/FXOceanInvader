@@ -36,6 +36,7 @@ public class ResourcesManager {
     // Rocket images
     public static final String MISSILE_RED = IMAGES_FOLDER + "missile_red.png";
     public static final String MISSILE_THREE_COLOR = IMAGES_FOLDER + "missile_three_color.png";
+    public static final String ROCKET = IMAGES_FOLDER + "rocket.png";
     
     // Explosion gif
     public static final String EXPLOSION = IMAGES_FOLDER + "ketchup_splash.gif";
@@ -87,7 +88,8 @@ public class ResourcesManager {
     
     public static final String[] WEAPONS_1 =  {
         MISSILE_RED,
-        MISSILE_THREE_COLOR
+        MISSILE_THREE_COLOR,
+        ROCKET
     };
     
     public static final String[] INVADERS = {			
