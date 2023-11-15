@@ -1,4 +1,4 @@
-package edu.vanier.ufo.ui;
+package edu.vanier.ufo;
 
 import edu.vanier.ufo.ui.controller.LevelChooser;
 import java.io.IOException;
