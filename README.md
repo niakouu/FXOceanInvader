@@ -19,7 +19,8 @@ you have more creatures to defeat, more missiles, and a bigger ship.
 
 ## Installation
 
-Compile the JAR file using an IDE.
+Compile the JAR file using an IDE for MacOs and Linux. 
+Luckely there is a compiled version for Windows users. You can start game by running `bin\oceanInvader.bat`.
 
 ## Contributing
 
