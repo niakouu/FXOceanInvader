@@ -1,5 +1,5 @@
-# FXOceanInvader
-FXOceanInvader is a game that I completed from and modified from [GameEngine by Quillion](https://github.com/Quillion/GameEngine). Essentially it is a simple space invader game made in Java and JavaFX.
+# OceanInvader
+OceanInvader is a game that I completed from and modified from [GameEngine by Quillion](https://github.com/Quillion/GameEngine). Essentially it is a simple space invader game made in Java and JavaFX.
 
 **Start Menu:**
 ![menu.png](images/menu.png)
@@ -16,6 +16,9 @@ FXOceanInvader is a game that I completed from and modified from [GameEngine by 
 ## Game Mechanics 
 The player is a ship that needs to destroy all the obstacles. As the level increase
 you have more creatures to defeat, more missiles, and a bigger ship.
+
+The missiles will be fired in the direction of the mouse. Also to activate the shield, 
+you should press `E`.
 
 ## Installation
 
